@@ -17,7 +17,7 @@ ANIMAL_LENGTH = 500
 ANIMAL_HEIGHT = (ANIMAL_LENGTH/16)*9
 
 #Assets loading
-HUNTER_IMAGE = pygame.image.load(os.path.join('Assets', 'fogs.png'))
+HUNTER_IMAGE = pygame.image.load(os.path.join('Code','Assets', 'fogs.png'))
 HUNTER_IMAGE_RESIZED = pygame.transform.scale(HUNTER_IMAGE, (ANIMAL_LENGTH, ANIMAL_HEIGHT))
 
 
