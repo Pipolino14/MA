@@ -1,7 +1,16 @@
 import pygame
-import os
+import time
+import math
+from utils import scale_image, blit_rotate_center
 
-WIDTH, HEIGHT = 1600, 900
+#Assets loading
+HUNTER_IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), 0.5)
+PREY_IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), 0.3)
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
+
+
+#Window dimensions 
+WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("AI Hunters")
 
@@ -12,41 +21,87 @@ BG_1color = (255, 255, 255)
 FPS = 60
 VEL = 5
 
-#Picture height & length
-ANIMAL_LENGTH = 500
-ANIMAL_HEIGHT = (ANIMAL_LENGTH/16)*9
+class Animal:
+    def __init__(self, max_vel, rotation_vel):
+        self.img = self.IMG
+        self.max_vel = max_vel
+        self.vel = 0
+        self.rotation_vel = rotation_vel
+        self.angle = 0
+        self.x, self.y = self.START_POS
+        self.acceleration = 0.1
 
-#Assets loading
-HUNTER_IMAGE = pygame.image.load(os.path.join('Code','Assets', 'fogs.png'))
-HUNTER_IMAGE_RESIZED = pygame.transform.scale(HUNTER_IMAGE, (ANIMAL_LENGTH, ANIMAL_HEIGHT))
+    
+    def rotate(self, left=False, right=False):
+        if left:
+            self.angle += self.rotation_vel
+        elif right:
+            self.angle -= self.rotation_vel
+    
+    def move_forward(self):
+        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.move()
+
+    def move(self):
+        #converting the current facing angle to RAD
+        radians = math.radians(self.angle)
+        #cos(RichtungsWinkel) * Hypothenuse{velocity vector} = Gegenkatethe --> Y movement
+        vertical = math.cos(radians) * self.vel
+        #sin(RichtungsWinkel) * Hypothenuse{velocity vector} = Ankatethe --> X movement
+        horizontal = math.sin(radians) * self.vel
+
+        self.y -= vertical
+        self.x -= horizontal
+    
+    def reduce_speed(self):
+        self.vel = max(self.vel - self.acceleration / 2, 0)
+        self.move()
 
 
+    def draw(self, win):
+        blit_rotate_center(win, self.img, (self.x, self.y), (self.angle+90))
 
-def draw_window(hunter):
-    WIN.fill(BG_1color)
-    WIN.blit(HUNTER_IMAGE_RESIZED, (hunter.x, hunter.y))
+class HunterAnimal(Animal):
+    IMG = HUNTER_IMG
+    START_POS = (180,200)
+
+
+def draw(win, images, hunter_animal):
+    for img, pos in images:
+        win.blit(img, pos)
+    
+    hunter_animal.draw(win)
     pygame.display.update()
 
-def main():
-    #drawing rectangles for movement of pictures
-    hunter = pygame.Rect(100, 300, ANIMAL_LENGTH, ANIMAL_HEIGHT) 
 
-    clock = pygame.time.Clock()
-    run = True
-    while run:
-        clock.tick(FPS)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-        
-        #WASD-Key movement (Have to figure out a way to make it an FOV and turn it with WASD)
-        keys_pressed = pygame.key.get_pressed()
-        if keys_pressed[pygame.K_d]:
-            hunter.x += VEL
-        
-        draw_window(hunter)
 
-    pygame.quit()
+run = True
+clock = pygame.time.Clock()
+images = [(BG_IMG, (0, 0))]
+hunter_animal = HunterAnimal(4, 4)
 
-if __name__ == "__main__":
-    main()
+while run:
+    clock.tick(FPS)
+    draw(WIN, images, hunter_animal)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+            break
+    
+    keys = pygame.key.get_pressed()
+    moved = False
+
+    if keys[pygame.K_a]:
+        hunter_animal.rotate(left=True)
+    if keys[pygame.K_d]:
+        hunter_animal.rotate(right=True)
+    if keys[pygame.K_w]:
+        moved = True
+        hunter_animal.move_forward()
+    
+    if not moved:
+        hunter_animal.reduce_speed()
+    
+
+pygame.quit()
