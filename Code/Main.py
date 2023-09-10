@@ -58,7 +58,6 @@ MyEnvironment = Environment()
 
 walker = HunterAnimal()
 
-#list(Environment.Hanimals.values())[0]
 
 
 
