@@ -45,7 +45,13 @@ def Draw(win, images):
     pygame.display.update()
 
 def check_collide():
-    pygame.sprite.groupcollide(GamePrey, GameHunter, True, False, pygame.sprite.collide_circle_ratio(0.7))
+    spriteGroup = pygame.sprite.groupcollide(GamePrey, GameHunter, True, False, pygame.sprite.collide_circle_ratio(0.7))
+    spriteGroup.values()
+    print(spriteGroup.values())
+    #Here is where we stopped.
+    #We want to recharge the Energy of the Hunter who has eaten a animal.
+    
+    
 
 def collided(H, P):
     print(H, P)
@@ -110,7 +116,6 @@ while run:
     GameHunter.update()
     GameHunter.draw(WIN)
     pygame.display.flip()
-
     check_collide()
 
 

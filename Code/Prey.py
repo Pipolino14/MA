@@ -23,3 +23,9 @@ class PreyAnimal(Animal):
         self.Angle_SPD = random.randint(1, 10)
         #self.STRTangle = 0
         Animal.__init__(self)
+    
+    def update(self, *args: Any, **kwargs: Any):
+        self.Energy = self.Energy - 1
+        if self.Energy <= 0:
+            self.vel = 0
+        Animal.update(self)

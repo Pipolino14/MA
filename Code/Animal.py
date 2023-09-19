@@ -20,6 +20,7 @@ class Animal(pygame.sprite.Sprite):
         self.angle = self.STRTangle
         self.angle_speed = self.Angle_SPD
         self.x, self.y = self.START_POS
+        self.Energy = 600
         #self.id = id
     
     def rotate(self, left=False, right=False):
