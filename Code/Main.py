@@ -12,7 +12,7 @@ from Prey import *
 #Assets loading
 
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 0.5)
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG"), 1)
 COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 

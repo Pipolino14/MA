@@ -4,7 +4,7 @@ import pygame
 import math
 from utils import *
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 0.5)
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 
 
