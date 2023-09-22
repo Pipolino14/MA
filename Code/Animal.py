@@ -4,7 +4,7 @@ import pygame
 import math
 from utils import *
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 0.5)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 
 
@@ -58,6 +58,7 @@ class Animal(pygame.sprite.Sprite):
         touch = mask.overlap(animal_mask, offset)
         return touch
     
+
     def check_border(self):
         HEI = (self.IMG.get_height()/2)
         WID = (self.IMGWID/2)

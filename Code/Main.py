@@ -12,7 +12,7 @@ from Prey import *
 #Assets loading
 
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 0.5)
 COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG"), 1)
 COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 
@@ -29,6 +29,7 @@ VEL = 5
 
 GameHunter = pygame.sprite.Group()
 GamePrey = pygame.sprite.Group()
+#EatingHunters = pygame.sprite.Group()
 
 
 def Draw(win, images):
@@ -45,12 +46,15 @@ def Draw(win, images):
     pygame.display.update()
 
 def check_collide():
-    spriteGroup = pygame.sprite.groupcollide(GamePrey, GameHunter, True, False, pygame.sprite.collide_circle_ratio(0.7))
-    spriteGroup.values()
-    print(spriteGroup.values())
+    spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
+    for x in spriteGroup.keys():
+        HunterAnimal.recharge
+        HunterAnimal.update
+        print("recharged")
+    #print(EatingList[0])
     #Here is where we stopped.
     #We want to recharge the Energy of the Hunter who has eaten a animal.
-    
+    #Solution 1: extract Hunter from List and "feed" it
     
 
 def collided(H, P):
