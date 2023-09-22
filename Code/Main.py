@@ -48,9 +48,8 @@ def Draw(win, images):
 def check_collide():
     spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
     for x in spriteGroup.keys():
-        HunterAnimal.recharge
-        HunterAnimal.update
-        print("recharged")
+        x.recharge()
+        print("Recharged")
     #print(EatingList[0])
     #Here is where we stopped.
     #We want to recharge the Energy of the Hunter who has eaten a animal.
