@@ -65,9 +65,7 @@ images = [(BG_IMG, (0, 0)), (COLLIDER_IMG, (0,0))]
 imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 MyEnvironment = Environment()
 
-walker = HunterAnimal()
-
-
+walker = HunterAnimal(WIN)
 
 
 
@@ -90,9 +88,9 @@ while run:
         walker.x = 300
         GameHunter.add(walker)
     if keys[pygame.K_2]:
-        GamePrey.add(PreyAnimal())
+        GamePrey.add(PreyAnimal(WIN))
     if keys[pygame.K_3]:
-        GameHunter.add(HunterAnimal())
+        GameHunter.add(HunterAnimal(WIN))
         
     if keys[pygame.K_a]:
         walker.rotate(left=True)

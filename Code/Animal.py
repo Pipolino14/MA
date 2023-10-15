@@ -9,7 +9,7 @@ WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 
 
 class Animal(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, surface):
         pygame.sprite.Sprite.__init__(self)
         self.image = self.IMG
         self.rect = self.image.get_rect()
@@ -17,10 +17,12 @@ class Animal(pygame.sprite.Sprite):
         self.mask = self.MASK
         self.vel = self.STRTvel
         self.acceleration = 0.3
-        self.angle = self.STRTangle
+        self.angle = math.radians(self.STRTangle)
         self.angle_speed = self.Angle_SPD
         self.x, self.y = self.START_POS
         self.Energy = 600
+        self.surface = surface
+        self.halfFOV = self.FOV / 2
         #self.id = id
     
     def rotate(self, left=False, right=False):
@@ -46,6 +48,19 @@ class Animal(pygame.sprite.Sprite):
     def reduce_speed(self, red):
         self.vel = max(self.vel - red, 0)
     
+
+    #proof of concept for vision-rays
+    def visionray(self):
+        faceangle =- math.radians(self.angle)
+        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * 100, self.y - math.cos(faceangle) * 100), 1)
+
+        pygame.draw.line(self.surface, (0, 255, 0), (self.x, self.y),
+                                       (self.x + math.sin(faceangle - self.halfFOV) * 100,
+                                        self.y - math.cos(faceangle - self.halfFOV) * 100), 1)
+
+        pygame.draw.line(self.surface, (0, 255, 0), (self.x, self.y),
+                                       (self.x + math.sin(faceangle + self.halfFOV) * 100,
+                                        self.y - math.cos(faceangle + self.halfFOV) * 100), 1)
 
 
 #    def draw(self, win):
@@ -85,9 +100,11 @@ class Animal(pygame.sprite.Sprite):
         #self.rect.move_ip(0, 1)
         self.move()
         self.check_border()
+        self.visionray()
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)
+        print(self.angle)
 
         
 

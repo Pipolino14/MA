@@ -14,7 +14,7 @@ class PreyAnimal(Animal):
     START_POS = (500, 500)
     IMGHEI = PREY_IMG.get_height()
     IMGWID = PREY_IMG.get_height()
-    def __init__(self):
+    def __init__(self, surface):
         self.POSX = random.randint(100, 1900)
         self.POSY = random.randint(100, 1000)
         self.START_POS = (self.POSX, self.POSY)
@@ -22,7 +22,7 @@ class PreyAnimal(Animal):
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(1, 10)
         #self.STRTangle = 0
-        Animal.__init__(self)
+        Animal.__init__(self, surface)
     
     def update(self, *args: Any, **kwargs: Any):
         self.Energy = self.Energy - 1
