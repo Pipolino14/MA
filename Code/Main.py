@@ -9,19 +9,18 @@ from Environment import *
 from Hunter import *
 from Prey import *
 
-#Assets loading
 
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG"), 1)
-COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
+#Window dimensions
 
-#Window dimensions 
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("AI Hunters")
 
 
+BG_IMG = pygame.image.load("Code/Assets/grass.jpg")
+COLLIDER_IMG = pygame.image.load("Code/Assets/collideTEST.PNG")
+COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 
 #Frames Per Second Limiter
 FPS = 60
@@ -66,7 +65,6 @@ imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 MyEnvironment = Environment()
 
 walker = HunterAnimal(WIN)
-
 
 
 cords = 0

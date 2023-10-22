@@ -23,6 +23,7 @@ class Animal(pygame.sprite.Sprite):
         self.Energy = 600
         self.surface = surface
         self.halfFOV = self.FOV / 2
+        self.rayangle = self.FOV / 20
         #self.id = id
     
     def rotate(self, left=False, right=False):
@@ -61,6 +62,23 @@ class Animal(pygame.sprite.Sprite):
         pygame.draw.line(self.surface, (0, 255, 0), (self.x, self.y),
                                        (self.x + math.sin(faceangle + self.halfFOV) * 100,
                                         self.y - math.cos(faceangle + self.halfFOV) * 100), 1)
+    
+    def castrays(self):
+        yello = 255
+        faceangle =- math.radians(self.angle)
+        startAngle = faceangle - self.halfFOV
+        for ray in range(21):
+            for depth in range(100):
+                target_x = self.x + math.sin(startAngle) * depth
+                target_y = self.y - math.cos(startAngle) * depth
+
+                pygame.draw.line(self.surface, (0, 0, 0), (self.x, self.y), (target_x, target_y), 0)
+                
+
+            startAngle += self.rayangle
+
+
+
 
 
 #    def draw(self, win):
@@ -101,10 +119,10 @@ class Animal(pygame.sprite.Sprite):
         self.move()
         self.check_border()
         self.visionray()
+        self.castrays()
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)
-        print(self.angle)
 
         
 

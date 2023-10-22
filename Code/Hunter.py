@@ -4,7 +4,7 @@ from Animal import *
 from utils import *
 
 #Image and the corresponding mask of the image for collision
-HUNTER_IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), 1)
+HUNTER_IMG = pygame.image.load("Code/Assets/hunter.png")
 HUNTER_MASK = pygame.mask.from_surface(HUNTER_IMG)
 
 class HunterAnimal(Animal):

@@ -4,7 +4,7 @@ from Animal import *
 from utils import *
 
 #Image and the corresponding mask of the image for collision
-PREY_IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), 1)
+PREY_IMG = pygame.image.load("Code/Assets/prey.png")
 PREY_MASK = pygame.mask.from_surface(PREY_IMG)
 
 
@@ -21,6 +21,7 @@ class PreyAnimal(Animal):
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(1, 10)
+        self.FOV = math.pi * 1.8
         #self.STRTangle = 0
         Animal.__init__(self, surface)
     
