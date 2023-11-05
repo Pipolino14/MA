@@ -17,13 +17,18 @@ class Animal(pygame.sprite.Sprite):
         self.mask = self.MASK
         self.vel = self.STRTvel
         self.acceleration = 0.3
-        self.angle = math.radians(self.STRTangle)
+        self.angle = self.STRTangle
+        #self.angle = math.radians(self.STRTangle)
         self.angle_speed = self.Angle_SPD
         self.x, self.y = self.START_POS
-        self.Energy = 600
+        self.Energy = 100
         self.surface = surface
         self.halfFOV = self.FOV / 2
+        self.generation = 0
         #self.id = id
+    
+    def newgen(self):
+        self.generation = self.generation + 1
     
     def rotate(self, left=False, right=False):
         if left==True:
@@ -104,7 +109,7 @@ class Animal(pygame.sprite.Sprite):
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)
-        print(self.angle)
+        
 
         
 

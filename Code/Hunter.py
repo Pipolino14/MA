@@ -1,5 +1,6 @@
 import pygame
 import random
+import copy
 from Animal import *
 from utils import *
 
@@ -12,16 +13,31 @@ class HunterAnimal(Animal):
     IMGHEI = HUNTER_IMG.get_height()
     IMGWID = HUNTER_IMG.get_height()
     MASK = HUNTER_MASK
-    def __init__(self, surface):
-        self.POSX = random.randint(100, 1900)
-        self.POSY = random.randint(100, 1000)
-        self.START_POS = (self.POSX, self.POSY)
+    def __init__(
+        self, 
+        surface,
+        posX = None,
+        posY = None
+        ):
+        self.POSX = posX
+        if posX == None:
+            posX = random.randint(100, 1900)
+        self.POSY = posY
+        if posY == None:
+            posY = random.randint(100, 1000)
+        self.START_POS = (posX, posY)
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(1, 10)
         self.FOV = math.pi / 4
+        self.fitness = 0
         #self.STRTangle = 0
         Animal.__init__(self, surface)
+
+    def deepcopy(self):
+        copyhunter = HunterAnimal(self.surface, self.x, self.y)
+        return copyhunter
+
 
     def update(self, *args: Any, **kwargs: Any):
         self.Energy = self.Energy - 1
@@ -30,4 +46,4 @@ class HunterAnimal(Animal):
         Animal.update(self)
     
     def recharge(self):
-        self.Energy = 600
+        self.Energy = self.Energy + 50

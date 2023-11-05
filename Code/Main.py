@@ -1,7 +1,7 @@
 import pygame
 import time
 import math
-import uuid
+import copy
 import random
 from utils import *
 from Animal import *
@@ -47,8 +47,13 @@ def Draw(win, images):
 
 def check_collide():
     spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
-    for x in spriteGroup.keys():
-        x.recharge()
+    for hunter in spriteGroup.keys():
+        hunter.recharge()
+        hunter.fitness = hunter.fitness + 1
+        if hunter.fitness >= 2:
+            hunter.fitness = 0
+            newhunter = hunter.deepcopy()
+            GameHunter.add(newhunter)
         print("Recharged")
     #print(EatingList[0])
     #Here is where we stopped.
@@ -91,6 +96,8 @@ while run:
         GamePrey.add(PreyAnimal(WIN))
     if keys[pygame.K_3]:
         GameHunter.add(HunterAnimal(WIN))
+
+
         
     if keys[pygame.K_a]:
         walker.rotate(left=True)
@@ -118,9 +125,6 @@ while run:
     GameHunter.draw(WIN)
     pygame.display.flip()
     check_collide()
-
-
-    
 
     
     #pygame.display.update()

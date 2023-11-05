@@ -21,9 +21,10 @@ class PreyAnimal(Animal):
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(1, 10)
+        self.FOV = math.pi * 1.5
         #self.STRTangle = 0
         Animal.__init__(self, surface)
-    
+
     def update(self, *args: Any, **kwargs: Any):
         self.Energy = self.Energy - 1
         if self.Energy <= 0:
