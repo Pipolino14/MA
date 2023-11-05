@@ -28,9 +28,12 @@ class HunterAnimal(Animal):
         self.START_POS = (posX, posY)
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
-        self.Angle_SPD = random.randint(1, 10)
+        self.Angle_SPD = random.randint(5, 10)
         self.FOV = math.pi / 4
+        self.rayangle = self.FOV / 20
         self.fitness = 0
+        self.FOVdis = 30
+    
         #self.STRTangle = 0
         Animal.__init__(self, surface)
 

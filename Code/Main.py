@@ -87,8 +87,7 @@ while run:
             break
     
     keys = pygame.key.get_pressed()
-    moved = False
-    
+        
     if keys[pygame.K_1]:
         walker.x = 300
         GameHunter.add(walker)
@@ -96,6 +95,11 @@ while run:
         GamePrey.add(PreyAnimal(WIN))
     if keys[pygame.K_3]:
         GameHunter.add(HunterAnimal(WIN))
+    if keys[pygame.K_4]:
+        newprey = GamePrey.sprites()[0]
+        print(newprey)
+        preyCopy = newprey.deepcopy()
+        GamePrey.add(preyCopy)
 
 
         
