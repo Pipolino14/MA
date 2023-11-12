@@ -30,11 +30,10 @@ class PreyAnimal(Animal):
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(3, 7)
-        self.FOV = math.pi * 1.5
-        self.rayangle = self.FOV / 20
-        self.FOVdis = 20
-        #self.STRTangle = 0
-        Animal.__init__(self, surface)
+        
+        Animal.__init__(self, surface, rays=5, FOV=270, ROV=150)
+
+        self.distances = [0, 0, 0, 0, 0]
 
     def deepcopy(self):
         newprey = PreyAnimal(self.surface, self.x, self.y)
@@ -48,9 +47,18 @@ class PreyAnimal(Animal):
         elif Eating == False:
             self.Energy -= 1
 
-    def update(self, *args: Any, **kwargs: Any):
+    def seeHunter(self, index, distance):
+        self.distances[index] = round(distance, 2)
+        if sum(self.distances) > 0:
+            #macht alle rays sichtbar, falls der hunter etwas sieht
+            self.rayGroup.draw(self.surface)
+            print("Prey:", self.distances)
+            #Die resultierende self.distances Liste wird der Input Layer im NW sein
+
+    def update(self, hunterGroup, *args: Any, **kwargs: Any):
+        for index, ray in enumerate(self.rayGroup.sprites()):
+            ray.checkSeeAnimal(index, (self.x, self.y), hunterGroup, self.seeHunter)
         self.recharge(False)
         if self.Energy <= 0:
             self.recharge(True)
-        print(self.Energy)
         Animal.update(self)

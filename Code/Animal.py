@@ -3,13 +3,14 @@ from typing import Any
 import pygame
 import math
 from utils import *
+from Ray import *
 
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 
 
 class Animal(pygame.sprite.Sprite):
-    def __init__(self, surface):
+    def __init__(self, surface, rays, FOV, ROV):
         pygame.sprite.Sprite.__init__(self)
         self.image = self.IMG
         self.rect = self.image.get_rect()
@@ -23,9 +24,15 @@ class Animal(pygame.sprite.Sprite):
         self.x, self.y = self.START_POS
         self.Energy = 600
         self.surface = surface
-        self.halfFOV = self.FOV / 2
         self.generation = 0
-        #self.id = id
+        self.rayGroup = pygame.sprite.Group()
+
+        for ray in range(rays):
+            rayAngle = ray * (FOV / rays) - round(FOV / 2, 0)
+            ray = Ray(surface, ROV, rayAngle)
+            self.rayGroup.add(ray)
+
+        self.id = id
     
     def newgen(self):
         self.generation = self.generation + 1
@@ -53,37 +60,6 @@ class Animal(pygame.sprite.Sprite):
     def reduce_speed(self, red):
         self.vel = max(self.vel - red, 0)
     
-
-    #proof of concept for vision-rays
-    def visionray(self):
-        faceangle =- math.radians(self.angle)
-        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * 100, self.y - math.cos(faceangle) * 100), 1)
-
-        pygame.draw.line(self.surface, (0, 255, 0), (self.x, self.y),
-                                       (self.x + math.sin(faceangle - self.halfFOV) * 100,
-                                        self.y - math.cos(faceangle - self.halfFOV) * 100), 1)
-
-        pygame.draw.line(self.surface, (0, 255, 0), (self.x, self.y),
-                                       (self.x + math.sin(faceangle + self.halfFOV) * 100,
-                                        self.y - math.cos(faceangle + self.halfFOV) * 100), 1)
-
-    def castrays(self):
-        yello = (0, 255, 255)
-        faceangle =- math.radians(self.angle)
-        startAngle = faceangle - self.halfFOV
-        for ray in range(21):
-            for depth in reversed(range(self.FOVdis)):
-                target_x = self.x + math.sin(startAngle) * depth * 20
-                target_y = self.y - math.cos(startAngle) * depth * 20
-
-                pygame.draw.line(self.surface, ((5*depth),(5*depth),(5*depth)), (self.x, self.y), (target_x, target_y), 1)
-                
-
-            startAngle += self.rayangle
-#    def draw(self, win):
-#        blit_rotate_center(win, self.image, (self.x, self.y), (self.angle+90))
-
-
     def collision(self, mask, x=0, y=0):
         animal_mask = pygame.mask.from_surface(self.image)
         offset = (int(self.x - x), int(self.y - y))
@@ -114,11 +90,12 @@ class Animal(pygame.sprite.Sprite):
 
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        #self.rect.move_ip(0, 1)
         self.move()
         self.check_border()
-        #self.castrays()
-        self.visionray()
+    
+        for ray in self.rayGroup.sprites():
+            ray.update(self.x, self.y, self.angle)
+
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)

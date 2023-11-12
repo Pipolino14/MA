@@ -9,19 +9,17 @@ from Environment import *
 from Hunter import *
 from Prey import *
 
-#Assets loading
 
-
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG"), 1)
-COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 
 #Window dimensions 
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("AI Hunters")
 
-
+#Assets loading
+BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg").convert_alpha(), 1)
+COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG").convert_alpha(), 1)
+COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 
 #Frames Per Second Limiter
 FPS = 60
@@ -123,15 +121,16 @@ while run:
     
     
     #pygame.display.update([imgRect])
-    GamePrey.update()
+    GamePrey.update(GameHunter)
     GamePrey.draw(WIN)
-    GameHunter.update()
+    GameHunter.update(GamePrey)
     GameHunter.draw(WIN)
     pygame.display.flip()
     check_collide()
 
     
-    #pygame.display.update()
+    #für Testing lasse ich den walker unsterblich sein.
+    walker.recharge()
 
 
 

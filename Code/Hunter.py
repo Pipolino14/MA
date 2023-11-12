@@ -29,21 +29,35 @@ class HunterAnimal(Animal):
         self.STRTvel = random.randint(1, 3)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(5, 10)
-        self.FOV = math.pi / 4
-        self.rayangle = self.FOV / 20
         self.fitness = 0
-        self.FOVdis = 30
+        #self.FOVdis = 30
+        self.seen = 0
+        self.surface = surface
     
         #self.STRTangle = 0
-        Animal.__init__(self, surface)
+        Animal.__init__(self, surface, rays=5, FOV=45, ROV=200)
+
+        #Distanzenliste für die Rays im Raycasting
+        self.distances = [0, 0, 0, 0, 0]
 
     def deepcopy(self):
         copyhunter = HunterAnimal(self.surface, self.x, self.y)
         return copyhunter
+    
+    def seePrey(self, index, distance):
+        self.distances[index] = round(distance, 2)
+        if sum(self.distances) > 0:
+            #macht alle rays sichtbar, falls der hunter etwas sieht
+            self.rayGroup.draw(self.surface)
+            print("Hunter:", self.distances)
+            #Die resultierende self.distances Liste wird der Input Layer im NW sein
 
 
-    def update(self, *args: Any, **kwargs: Any):
+    def update(self, preyGroup, *args: Any, **kwargs: Any):
         self.Energy = self.Energy - 1
+
+        for (index, ray) in enumerate(self.rayGroup.sprites()):
+            ray.checkSeeAnimal(index, (self.x, self.y), preyGroup, self.seePrey)
         if self.Energy <= 0:
             pygame.sprite.Sprite.kill(self)
         Animal.update(self)
