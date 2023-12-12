@@ -22,15 +22,16 @@ class Ray(pygame.sprite.Sprite):
     # Checkt ob man ein Tier in einer Gruppe sieht (Hunter oder Prey) und gibt die 
     # Distanz weiter an eine Callback Funktion
     def checkSeeAnimal(self, index, hunterPos, animalGroup, callback):
-        spriteGroup = pygame.sprite.spritecollide(
-            self, animalGroup, False, pygame.sprite.collide_mask
-        )
-        if len(spriteGroup) > 0:
-            preyPos = (spriteGroup[0].x, spriteGroup[0].y)
-            dist = math.dist(hunterPos, preyPos)
-            callback(index, dist)
-        else:
-            callback(index, 0)
+        if pygame.sprite.spritecollide(self, animalGroup, False, None):
+            spriteGroup = pygame.sprite.spritecollide(
+                self, animalGroup, False, pygame.sprite.collide_mask
+            )
+            if len(spriteGroup) > 0:
+                preyPos = (spriteGroup[0].x, spriteGroup[0].y)
+                dist = math.dist(hunterPos, preyPos)
+                callback(index, dist)
+            else:
+                callback(index, 0)
 
     #Update funktion. Definiert die Maske immer wieder je nach Position und Winkel des "Wirt-Tieres" 
     def update(self, x, y, angle):

@@ -1,13 +1,17 @@
 from typing import Any
-
+#from Network import *
 import pygame
 import math
 from utils import *
 from Ray import *
+from Network import *
+from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 
+MatrixLimit = 0.5
 
 class Animal(pygame.sprite.Sprite):
     def __init__(self, surface, rays, FOV, ROV):
@@ -22,13 +26,20 @@ class Animal(pygame.sprite.Sprite):
         #self.angle = math.radians(self.STRTangle)
         self.angle_speed = self.Angle_SPD
         self.x, self.y = self.START_POS
-        self.Energy = 600
         self.surface = surface
         self.generation = 0
         self.rayGroup = pygame.sprite.Group()
+        #self.weights = [np.random.uniform(0, MatrixLimit, size=(5, 4)), np.random.uniform(0, MatrixLimit, size=(4, 2))]
+        #self.biases = [np.random.uniform(0, MatrixLimit, size=(1, 4)), np.random.uniform(0, MatrixLimit, size=(1, 2))]
+        self.weights = [np.random.rand(5, 4), np.random.rand(4, 2)]
+        self.biases = [np.random.rand(1, 4), np.random.rand(1, 2)]
+        self.Network = Network(self.weights, self.biases)
+
+        
+
 
         for ray in range(rays):
-            rayAngle = ray * (FOV / rays) - round(FOV / 2, 0)
+            rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays)/2)
             ray = Ray(surface, ROV, rayAngle)
             self.rayGroup.add(ray)
 
@@ -54,8 +65,11 @@ class Animal(pygame.sprite.Sprite):
         self.y -= vertical
         self.x -= horizontal
 
+        #berechnet die verbrauchte Energie bei der immomentigen Geschwindigkeit
+        self.Energy = self.Energy - self.vel
+
     def increase_speed(self, inc):
-        self.vel = self.vel + inc
+        self.vel = min(self.vel + inc, 5)
     
     def reduce_speed(self, red):
         self.vel = max(self.vel - red, 0)
@@ -87,18 +101,33 @@ class Animal(pygame.sprite.Sprite):
             self.angle = (360 - self.angle) 
             self.x = WID + 1
         
+    def rayupdate(self):
+        for ray in self.rayGroup.sprites():
+            ray.update(self.x, self.y, self.angle)
+
+    def visionray(self):
+        faceangle =- math.radians(self.angle)
+        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * 100, self.y - math.cos(faceangle) * 100), 2)
 
 
     def update(self, *args: Any, **kwargs: Any) -> None:
         self.move()
         self.check_border()
-    
+
+        #with Pool() as pool:
+        #    pool.imap_unordered(self.rayupdate, self.rayGroup.sprites())
         for ray in self.rayGroup.sprites():
             ray.update(self.x, self.y, self.angle)
+
 
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)
+
+        self.rayGroup.draw(self.surface)
+        self.visionray()
+        
+
         
 
         

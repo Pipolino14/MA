@@ -4,11 +4,11 @@
 import numpy as np
 
 #random 5-stelliger Vektor generieren
-input_data = np.random.randn(5)
+#input_data = np.random.randn(5)
 
 #random weights und Biases kreieren
-weights = [np.random.randn(5, 4), np.random.randn(4, 3)]
-biases = [np.random.randn(4), np.random.randn(3)]
+#weights = [np.random.randn(5, 4), np.random.randn(4, 2)]
+#biases = [np.random.randn(4), np.random.randn(2)]
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -24,7 +24,28 @@ def forward(x, weights, biases):
     #Nochmals Sigmoid anwenden
     network_output = sigmoid(output_layer_input)
 
-    return network_output
+    walk = round(network_output[0])
+    if walk == 0:
+        print("Rückwärts")
+    else:
+        print("Vorwärts")
 
-result = forward(input_data, weights, biases)
-print("Ausgabe:", result)
+    turn = round(network_output[1])
+    if turn == 0:
+        print("Links")
+    else:
+        print("Rechts")
+        
+
+
+Rweights = [np.random.randn(5, 4), np.random.randn(4, 2)]
+Rbiases = [np.random.randn(4), np.random.randn(2)]
+
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
+forward(np.random.randn(5), Rweights, Rbiases)
