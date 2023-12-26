@@ -4,7 +4,7 @@ from Animal import *
 from utils import *
 
 class PreyAnimal(Animal):
-    IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), 0.5)
+    IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), 0.35)
     MASK = pygame.mask.from_surface(IMG)
     IMGHEI = IMG.get_height()
     IMGWID = IMG.get_height()
@@ -24,15 +24,16 @@ class PreyAnimal(Animal):
         self.STRTvel = random.randint(0, 1)
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(3, 7)
-        self.fitness = 0
-        self.Energy = 600
+        self.fitness = random.randint(0, 100)
+        self.Energy = 400
         
-        Animal.__init__(self, "prey", surface, rays=5, FOV=270, ROV=150)
+        Animal.__init__(self, "prey", surface, rays=5, FOV=270, ROV=250)
 
         self.distances = [-1, -1, -1, -1, -1]
 
     def deepcopy(self):
         newprey = PreyAnimal(self.surface, self.x, self.y)
+        newprey.newgen()
         return newprey
 
     def recharge(self):

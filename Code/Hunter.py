@@ -5,7 +5,7 @@ from Animal import *
 from utils import *
 
 class HunterAnimal(Animal):
-    IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), 0.5)
+    IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), 0.35)
     IMGHEI = IMG.get_height()
     IMGWID = IMG.get_height()
     MASK = pygame.mask.from_surface(IMG)
@@ -29,18 +29,19 @@ class HunterAnimal(Animal):
         #self.FOVdis = 30
         self.seen = 0
         self.surface = surface
-        self.Energy = 1200
+        self.Energy = 600
 
     
         #self.STRTangle = 0
-        Animal.__init__(self, "hunter", surface, rays=5, FOV=50, ROV=300)
+        Animal.__init__(self, "hunter", surface, rays=5, FOV=50, ROV=500)
 
         #Distanzenliste für die Rays im Raycasting
         self.distances = [-1, -1, -1, -1, -1]
 
     def deepcopy(self):
-        copyhunter = HunterAnimal(self.surface, self.x, self.y)
-        return copyhunter
+        newhunter = HunterAnimal(self.surface, self.x, self.y)
+        newhunter.newgen()
+        return newhunter
     
     #def seePrey(self, index, distance):
     #    self.distances[index] = distance
@@ -90,8 +91,8 @@ class HunterAnimal(Animal):
 
 
     def recharge(self):
-        self.Energy = self.Energy + 600
-
+        #self.Energy = self.Energy + 600
+        self.Energy = 600
 
     def update(self, preyGroup):
         if self.vel <= 3:

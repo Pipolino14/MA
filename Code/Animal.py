@@ -45,7 +45,7 @@ class Animal(pygame.sprite.Sprite):
         self.id = id
     
     def newgen(self):
-        self.generation = self.generation + 1
+        self.generation += 1
     
     # def rotate(self, turnspeed, left=False, right=False):
     #     if left==True:

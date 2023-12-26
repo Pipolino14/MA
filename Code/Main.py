@@ -21,7 +21,8 @@ myNetworkBuilder = NetworkBuilder(0, 0)
 
 GameHunter = pygame.sprite.Group()
 GamePrey = pygame.sprite.Group()
-HunterRepro = pygame.sprite.Group()
+hunterRepro = pygame.sprite.Group()
+preyRepro = pygame.sprite.Group()
 #EatingHunters = pygame.sprite.Group()
 
 def animate(Hpop, Ppop, CurrentTime):
@@ -61,27 +62,35 @@ def check_collide():
             if hunter.fitness >= 2:
                 hunter.fitness = 0
                 newhunter = hunter.deepcopy()
-                HunterRepro.add(newhunter)
-                Reprolist = HunterRepro.sprites()
-                if len(Reprolist) == 2:
-                    N1weights = Reprolist[0].Network.weights
-                    N2weights = Reprolist[1].Network.weights
-                    N1biases = Reprolist[0].Network.biases
-                    N2biases = Reprolist[1].Network.biases
-                    N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
-                    N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
-                    for puppy in Reprolist:
-                        GameHunter.add(puppy)
-                    HunterRepro.empty()
-#
+                hunterRepro.add(newhunter)
 
-        #print("Recharged")
-    #print(EatingList[0])
-    #Here is where we stopped.
-    #We want to recharge the Energy of the Hunter who has eaten a animal.
-    #Solution 1: extract Hunter from List and "feed" it
+def check_repro():
+    Hlist = hunterRepro.sprites()
+    Plist = preyRepro.sprites()
+    if len(Hlist) >= 2:
+        N1weights = Hlist[0].Network.weights
+        N2weights = Hlist[1].Network.weights
+        N1biases = Hlist[0].Network.biases
+        N2biases = Hlist[1].Network.biases
+        N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
+        N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
+        for crossHunter in Hlist:
+            crossHunter.Network = myNetworkBuilder.mutateNetwork_3(crossHunter.Network)
+            GameHunter.add(crossHunter)
+        hunterRepro.remove(Hlist)
 
-
+    if len(Plist) >= 2:
+        N1weights = Plist[0].Network.weights
+        N2weights = Plist[1].Network.weights
+        N1biases = Plist[0].Network.biases
+        N2biases = Plist[1].Network.biases
+        N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
+        N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
+        for crossPrey in Plist:
+            crossPrey.Network = myNetworkBuilder.mutateNetwork_3(crossPrey.Network)
+            GamePrey.add(crossPrey)
+            print("newprey", len(GamePrey.sprites()))
+        preyRepro.remove(Plist[0], Plist[1])
 
 def collided(H, P):
     print(H, P)
@@ -127,7 +136,6 @@ def storeData():
 
 walker = HunterAnimal(WIN)
 walker.Network.empty_Network()
-print(walker.Network.biases, walker.Network.weights)
 
 framecount = 0
 
@@ -148,11 +156,13 @@ while run:
 
     for prey in GamePrey:
         prey.fitness += 1
-        if prey.fitness >= 300:
+        if prey.fitness >= 155:
             prey.fitness = 0
             newprey = prey.deepcopy()
-            newprey.Network = myNetworkBuilder.mutateNetwork(prey.Network)
-            GamePrey.add(newprey)
+            preyRepro.add(newprey)
+
+    
+    check_repro()
 
     hunter_pop = len(GameHunter.sprites())
     prey_pop = len(GamePrey.sprites())

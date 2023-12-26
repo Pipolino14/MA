@@ -43,11 +43,61 @@ class NetworkBuilder:
             
         return newBiasesN1_1, newBiasesN2_1, newBiasesN1_2, newBiasesN2_2
 
-    def mutateNetwork(self, parentNetwork):
+    #Diese Mutation macht eine random Matrix und addiert diese zur vorherigen Matrix.
+    #Problem: Diese Funktion addiert nur und mit der Zeit werden alle Weights/Biases in Richtung 1 gehen.
+    def mutateNetwork_1(self, inputNetwork):
         rngweights = [np.random.randn(5, 4), np.random.randn(4, 2)]
         rngbiases = [np.random.randn(4), np.random.randn(2)]
-        newweights = [np.add(parentNetwork.weights[0] , rngweights[0]) , np.add(parentNetwork.weights[1] , rngweights[1])]
-        newbiases = [np.add(parentNetwork.biases[0] , rngbiases[0]) , np.add(parentNetwork.biases[1] , rngbiases[1])]
-        childNetwork = Network(newweights, newbiases)
-        return childNetwork
+        newweights = [np.add(inputNetwork.weights[0] , rngweights[0]) , np.add(inputNetwork.weights[1] , rngweights[1])]
+        newbiases = [np.add(inputNetwork.biases[0] , rngbiases[0]) , np.add(inputNetwork.biases[1] , rngbiases[1])]
+        outputNetwork = Network(newweights, newbiases)
+        return outputNetwork
+    
+    #Diese Mutation nimmt alle Elemente der Matrix und shuffelt sich ganz wirr durcheinander.
+    #Problem: es shuffelt alle nummern (wie in mutateNetwork_1) und nicht nur einzelne.
+    def mutateNetwork_2(self, inputNetwork):
+        newweights = [np.random.permutation(inputNetwork.weights[0]) , np.random.permutation(inputNetwork.weights[1])]
+        newbiases = [np.random.permutation(inputNetwork.biases[0]) , np.random.permutation(inputNetwork.biases[1])]
+        outputNetwork = Network(newweights, newbiases)
+        return outputNetwork
+    
+    
+    #Diese Mutation wirkt ähnlich, wie die erste Mutationsfunktion mit einem kleinem unterschied.
+    # 1. Sie kreiert zuerst eine Matrix mit Elementen von -0.1 bis 0.1.
+    # 2. Dann Kreiert sie eine Matrix mit Elementen -1, 0 und 1
+    # 3. Sie Kreiert dann nochmals eine Matrix mit nur 0 und 1 und Multipliziert diese mit der Matrix in Schritt 2.
+    # 4. Die Multipliziert diese Matrix nun mit der ersten matrix, sodass nur wenige Werte mit der schlussendlichen Matrix multipliziert werden.
+    # Der Grund warum ich Schritt 3 gemacht habe ist, dass die wahrscheinlichkeit einer Änderung der Zahl bei 2/3 liegt. Das finde ich zu hoch.
+    # Mit Schritt 3 ist diese Wahrscheinlichkeit der Änderung 1/3 und ich kann diese auch wiederholen.
+    def mutateNetwork_3(self, inputNetwork):
+        #Mache random Matrizen, welcher von -0.1 bis 0.1 gehen kann
+        mutWeights_1 = np.random.uniform(low=-0.1, high=0.1, size=(5, 4)) 
+        mutWeights_2 = np.random.uniform(low=-0.1, high=0.1, size=(4, 2))
+        mutBiases_1 = np.random.uniform(low=-0.1, high=0.1, size=4)
+        mutBiases_2 = np.random.uniform(low=-0.1, high=0.1, size=2)
+
+        #Hier kreiere ich eine Matrix, welche entweder -1, 0, 1 enthalten kann. Dies mache ich für alle Matrizen.
+        Weights_1_rng = np.random.randint(low=-1, high=2, size=(5, 4))
+        Weights_2_rng = np.random.randint(low=-1, high=2, size=(4, 2))
+        Biases_1_rng = np.random.randint(low=-1, high=2, size=4)
+        Biases_2_rng = np.random.randint(low=-1, high=2, size=2)
+
+        #Da bei der vorherigen immernoch ein grossteil der Nummern geändert werden, kreiere ich hier Matrizen mit nur 1 oder 0 und multipliziere diese mit der vorherigen Matrix.
+        Weights_1_rng = Weights_1_rng * np.random.randint(2, size=(5, 4))
+        Weights_2_rng = Weights_2_rng * np.random.randint(2, size=(4, 2))
+        Biases_1_rng = Biases_1_rng * np.random.randint(2, size=4)
+        Biases_2_rng = Biases_2_rng * np.random.randint(2, size=2)
+
+        #Jetzt multipliziere ich die rng matrizen mit den random Matrizen, dass nun nur in spezifischen orten ein wechsel stattgefunden hat und dieser nur leicht Positiv, sowie auch nur leicht negativ sein kann.
+        selWeights1 = mutWeights_1 * Weights_1_rng
+        selWeights2 = mutWeights_2 * Weights_2_rng
+        selBiases1 = mutBiases_1 * Biases_1_rng
+        selBiases2 = mutBiases_2 * Biases_2_rng
+        
+        #Jetzt adiere ich diese leiche Änderungen zur inputMatrix und returne diese danach. 
+        newweights = [np.add(inputNetwork.weights[0] , selWeights1) , np.add(inputNetwork.weights[1] , selWeights2)]
+        newbiases = [np.add(inputNetwork.biases[0] , selBiases1) , np.add(inputNetwork.biases[1] , selBiases2)]
+
+        outputNetwork = Network(newweights, newbiases)
+        return outputNetwork
     
