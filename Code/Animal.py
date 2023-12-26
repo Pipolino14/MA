@@ -1,20 +1,21 @@
 from typing import Any
-#from Network import *
 import pygame
 import math
 from utils import *
 from Ray import *
 from Network import *
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+BG_IMG = BG_IMG.convert()
+WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+pygame.display.set_caption("Calculating of the fittest")
 
 MatrixLimit = 0.5
 
 class Animal(pygame.sprite.Sprite):
-    def __init__(self, surface, rays, FOV, ROV):
+    def __init__(self, animal, surface, rays, FOV, ROV):
         pygame.sprite.Sprite.__init__(self)
         self.image = self.IMG
         self.rect = self.image.get_rect()
@@ -29,18 +30,16 @@ class Animal(pygame.sprite.Sprite):
         self.surface = surface
         self.generation = 0
         self.rayGroup = pygame.sprite.Group()
-        #self.weights = [np.random.uniform(0, MatrixLimit, size=(5, 4)), np.random.uniform(0, MatrixLimit, size=(4, 2))]
-        #self.biases = [np.random.uniform(0, MatrixLimit, size=(1, 4)), np.random.uniform(0, MatrixLimit, size=(1, 2))]
-        self.weights = [np.random.rand(5, 4), np.random.rand(4, 2)]
-        self.biases = [np.random.rand(1, 4), np.random.rand(1, 2)]
+        self.weights = [np.random.uniform(0, MatrixLimit, size=(5, 4)), np.random.uniform(0, MatrixLimit, size=(4, 2))]
+        self.biases = [np.random.uniform(0, MatrixLimit, size=(1, 4)), np.random.uniform(0, MatrixLimit, size=(1, 2))]
         self.Network = Network(self.weights, self.biases)
 
         
 
 
         for ray in range(rays):
-            rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays)/2)
-            ray = Ray(surface, ROV, rayAngle)
+            rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays) / 2)
+            ray = Ray(animal, surface, ROV, rayAngle)
             self.rayGroup.add(ray)
 
         self.id = id
@@ -48,11 +47,18 @@ class Animal(pygame.sprite.Sprite):
     def newgen(self):
         self.generation = self.generation + 1
     
-    def rotate(self, left=False, right=False):
-        if left==True:
-            self.angle += self.angle_speed
-        if right==True:
-            self.angle -= self.angle_speed
+    # def rotate(self, turnspeed, left=False, right=False):
+    #     if left==True:
+    #         self.angle += self.angle_speed * turnspeed
+    #     if right==True:
+    #         self.angle -= self.angle_speed * turnspeed
+        
+    def rotate(self, turn_right, turn_angle):
+        angle_factor = 30
+        if turn_right:
+            self.angle += angle_factor * turn_angle
+        else:
+            self.angle -= angle_factor * turn_angle
 
     def move(self):
         #converting the current facing angle to RAD
@@ -110,22 +116,23 @@ class Animal(pygame.sprite.Sprite):
         pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * 100, self.y - math.cos(faceangle) * 100), 2)
 
 
-    def update(self, *args: Any, **kwargs: Any) -> None:
+    def update(self, target_group) -> None:
         self.move()
         self.check_border()
 
         #with Pool() as pool:
         #    pool.imap_unordered(self.rayupdate, self.rayGroup.sprites())
-        for ray in self.rayGroup.sprites():
-            ray.update(self.x, self.y, self.angle)
-
 
         if self.vel < 0:
             self.vel = 0
         self.rect.center=(self.x, self.y)
 
-        self.rayGroup.draw(self.surface)
+        self.rayGroup.update((self.x, self.y), self.angle, target_group)
+        distances = []
+        for ray in self.rayGroup.sprites():
+            distances.append(ray.distance)
         self.visionray()
+        return distances
         
 
         

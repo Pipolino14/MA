@@ -1,29 +1,17 @@
 import pygame
+import pygame.freetype as ft
 import matplotlib.pyplot as mpl
+import pandas as pd
+import datetime
+
 from matplotlib.animation import FuncAnimation
-import multiprocessing as mp
-from multiprocessing import Pool
-#from multiprocessing.pool import ThreadPool
+
 from utils import *
 from Animal import *
-from Environment import *
 from Hunter import *
 from Prey import *
 from NetworkBuilder import *
 
-
-
-
-
-#Window dimensions 
-WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("AI Hunters")
-
-#Assets loading
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg").convert_alpha(), 1)
-COLLIDER_IMG = scale_image(pygame.image.load("Code/Assets/collideTEST.PNG").convert_alpha(), 1)
-COLLIDER_TEST_MASK = pygame.mask.from_surface(COLLIDER_IMG)
 
 #Frames Per Second Limiter
 FPS = 30
@@ -38,10 +26,11 @@ HunterRepro = pygame.sprite.Group()
 
 def animate(Hpop, Ppop, CurrentTime):
     mpl.cla()
-    mpl.plot(CurrentTime, Hpop)
-    mpl.xlabel('Time')
-    mpl.ylabel('Hunter Population')
-    mpl.title('Population Graphs')
+    mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop)
+    mpl.legend(["Hunters","Preys"])
+    mpl.xlabel('Zeit in Sekunden')
+    mpl.ylabel('Anzahl Tiere')
+    mpl.title('Populationsgrösse')
     mpl.ion()
     mpl.show()
     mpl.pause(0.001)
@@ -59,8 +48,9 @@ def Draw(win, images):
 #        prey.draw(win)
     pygame.display.update()
 
-myTicks = []
-myHunterPop = []
+plot_ticks = []
+plot_hunter = []
+plot_prey = []
 
 def check_collide():
     if pygame.sprite.groupcollide(GameHunter, GamePrey, False, False, None):
@@ -98,79 +88,63 @@ def collided(H, P):
 
 run = True
 clock = pygame.time.Clock()
-images = [(BG_IMG, (0, 0)), (COLLIDER_IMG, (0,0))]
+#images = [(BG_IMG, (0, 0)), (COLLIDER_IMG, (0,0))]
 imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
-MyEnvironment = Environment()
+
+#-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
+cords = 0
+numHunters = 100
+numPreys = 200
+#------------------------------------------------------------------------------------------------------------------
+
+for counter in range(numHunters):
+    GameHunter.add(HunterAnimal(WIN))
+
+for counter in range(numPreys):
+    GamePrey.add(PreyAnimal(WIN))
+
+pygame.init()
 
 
+font = ft.SysFont('Verdana', 20)
+
+def draw_fps():
+    fps = f'{clock.get_fps() :.2f}FPS'
+    font.render_to(WIN, (0, 0), text=fps, fgcolor='red', bgcolor='black')
+
+def draw_info(text):
+    font.render_to(WIN, (0, 100), text=text, fgcolor='green', bgcolor='black')
+
+def storeData():
+    excelData = {"Zeit":plot_ticks, "Anz. Jäger": plot_hunter, "Anz. Beute": plot_prey}
+
+    df = pd.DataFrame(excelData)
+    now_time = datetime.datetime.now()
+    filename =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.xlsx"
+    plotname =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.png"
+    df.to_excel(filename, index=False)
+    mpl.savefig(plotname)
 
 walker = HunterAnimal(WIN)
+walker.Network.empty_Network()
+print(walker.Network.biases, walker.Network.weights)
 
+framecount = 0
 
+#-----------------------------------------------GAMELOOP-----------------------------------------------
 
-cords = 0
-
-#MyEnvironment.Hanimals, MyEnvironment.Panimals
 while run:
+    pygame.display.update()
     clock.tick(FPS)
     WIN.blit(BG_IMG,(0, 0)) 
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-            break
+    draw_fps()
     
-    keys = pygame.key.get_pressed()
-        
-    if keys[pygame.K_1]:
-        walker.x = 300
-        walker.vel = 0
-        GameHunter.add(walker)
-    if keys[pygame.K_2]:
-        GamePrey.add(PreyAnimal(WIN))
-    if keys[pygame.K_3]:
-        GameHunter.add(HunterAnimal(WIN))
-    if keys[pygame.K_4]:
-        newprey = GamePrey.sprites()[0]
-        preyCopy = newprey.deepcopy()
-        GamePrey.add(preyCopy)
-
-
-        
-    if keys[pygame.K_a]:
-        walker.rotate(left=True)
-    if keys[pygame.K_d]:
-        walker.rotate(right=True)
-    if keys[pygame.K_w]:
-        walker.increase_speed(0.3)
-    if keys[pygame.K_s]:
-        walker.reduce_speed(0.3)
-
-    
-    #off window bounce prototype
-    #collision checker for the walker
-        
-    
-    #collision checker for the walker
-    #print(pygame.sprite.Group.sprites(GameHunter))
-    
-    
-    #pygame.display.update([imgRect])
-
-    #---------TESTING_WITH_MULTIPROCESSING-------------
-    #with Pool(processes=10) as pool:
-    #    pool.imap_unordered(GameHunter.update, GameHunter)
-    #mp.Process(target=GameHunter.update(), args=GameHunter)
-    #mp.Process(target=GamePrey.update(), args=GamePrey)
-    #---------------------------------------------------
-
     GamePrey.update(GameHunter)
     GamePrey.draw(WIN)
     GameHunter.update(GamePrey)
     GameHunter.draw(WIN)
-    pygame.display.flip()
-    check_collide()
 
+    check_collide()
 
     for prey in GamePrey:
         prey.fitness += 1
@@ -180,18 +154,44 @@ while run:
             newprey.Network = myNetworkBuilder.mutateNetwork(prey.Network)
             GamePrey.add(newprey)
 
+    hunter_pop = len(GameHunter.sprites())
+    prey_pop = len(GamePrey.sprites())
+    plot_ticks.append(pygame.time.get_ticks() / 1000)
+    plot_hunter.append(hunter_pop)
+    plot_prey.append(prey_pop)
+
+    framecount += 1
+    if ((framecount % 30) == 0):
+        framecount = 0
+        animate(plot_hunter, plot_prey, plot_ticks)
     
-    #für Testing lasse ich den walker unsterblich sein.
+    if ((hunter_pop == 0) or (prey_pop == 0)):
+        storeData()
+        run = False
+
+    
+    #---------------WALKER---------------
     walker.recharge()
-
-
-    HuntPop = len(GameHunter.sprites())
-    PreyPop = len(GamePrey.sprites())
-    myTicks.append(pygame.time.get_ticks())
-    myHunterPop.append(HuntPop)
-    animate(myHunterPop, PreyPop, myTicks)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_1]:
+        walker.x = 300
+        walker.vel = 0
+        GameHunter.add(walker)
     
+    if keys[pygame.K_a]:
+        walker.rotate(turn_right=False, turn_angle=0.5)
+    if keys[pygame.K_d]:
+        walker.rotate(turn_right=True, turn_angle=0.5)
+    if keys[pygame.K_w]:
+        walker.increase_speed(0.3)
+    if keys[pygame.K_s]:
+        walker.reduce_speed(0.3)
+    #------------------------------------
 
-
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            storeData()
+            run = False
+            break
 
 pygame.quit()

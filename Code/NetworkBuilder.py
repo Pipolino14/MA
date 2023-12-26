@@ -33,8 +33,8 @@ class NetworkBuilder:
         biasesLane_1 = N1biases_1.shape
         biasesLane_2 = N1biases_2.shape
 
-        crossoverBiases_1 = np.random.randint(1, biasesLane_1[0])
-        crossoverBiases_2 = np.random.randint(1, biasesLane_2[0])
+        crossoverBiases_1 = np.random.randint(1, biasesLane_1[1])
+        crossoverBiases_2 = np.random.randint(1, biasesLane_2[1])
 
         newBiasesN1_1 = np.concatenate((N1biases_1[:crossoverBiases_1], N2biases_1[crossoverBiases_1:]))
         newBiasesN2_1 = np.concatenate((N2biases_1[:crossoverBiases_1], N1biases_1[crossoverBiases_1:]))

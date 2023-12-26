@@ -1,3 +1,5 @@
+import math
+
 #please dont break
 
 class Animal:
@@ -89,3 +91,5 @@ def check_border(self):
             self.x = 0 + WID + 1
         if self.x < WID:
             self.x = WIDTH - WID - 1
+
+#-----------------------------
