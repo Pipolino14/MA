@@ -2,9 +2,10 @@ import pygame
 import random
 from Animal import *
 from utils import *
+from Globals import *
 
 class PreyAnimal(Animal):
-    IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), 0.35)
+    IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), animal_size)
     MASK = pygame.mask.from_surface(IMG)
     IMGHEI = IMG.get_height()
     IMGWID = IMG.get_height()
@@ -25,9 +26,9 @@ class PreyAnimal(Animal):
         self.STRTangle = random.randint(0, 360)
         self.Angle_SPD = random.randint(3, 7)
         self.fitness = random.randint(0, 100)
-        self.Energy = 400
+        self.Energy = prey_energy
         
-        Animal.__init__(self, "prey", surface, rays=5, FOV=270, ROV=250)
+        Animal.__init__(self, "prey", surface, rays=5, FOV=PREY_FOV, ROV=PREY_ROV)
 
         self.distances = [-1, -1, -1, -1, -1]
 

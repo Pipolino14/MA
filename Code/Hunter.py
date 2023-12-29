@@ -1,11 +1,10 @@
 import pygame
 import random
-import copy
 from Animal import *
 from utils import *
-
+from Globals import *
 class HunterAnimal(Animal):
-    IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), 0.35)
+    IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), animal_size)
     IMGHEI = IMG.get_height()
     IMGWID = IMG.get_height()
     MASK = pygame.mask.from_surface(IMG)
@@ -29,11 +28,11 @@ class HunterAnimal(Animal):
         #self.FOVdis = 30
         self.seen = 0
         self.surface = surface
-        self.Energy = 600
-
+        self.Energy = hunter_energy
+        self.no_hunt = 0
     
         #self.STRTangle = 0
-        Animal.__init__(self, "hunter", surface, rays=5, FOV=50, ROV=500)
+        Animal.__init__(self, "hunter", surface, rays=5, FOV=HUNTER_FOV, ROV=HUNTER_ROV)
 
         #Distanzenliste für die Rays im Raycasting
         self.distances = [-1, -1, -1, -1, -1]
@@ -92,7 +91,7 @@ class HunterAnimal(Animal):
 
     def recharge(self):
         #self.Energy = self.Energy + 600
-        self.Energy = 600
+        self.Energy = hunter_energy
 
     def update(self, preyGroup):
         if self.vel <= 3:
@@ -108,5 +107,6 @@ class HunterAnimal(Animal):
         #    ray.checkSeeAnimal(index, (self.x, self.y), preyGroup, self.seePrey)
         self.distances = Animal.update(self, preyGroup)
         self.hunt()
-    
+        if self.no_hunt > 0:
+            self.no_hunt -= 1
     

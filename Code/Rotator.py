@@ -1,6 +1,7 @@
 import pygame
 import math
 from utils import *
+from Globals import *
 
 class  Rotator():
     
@@ -12,18 +13,19 @@ class  Rotator():
     def create_rays(surface, hunter_view_range, prey_view_range):
         hunter_rect_size = 2 * hunter_view_range
         Rotator.hunter_image = pygame.Surface([hunter_rect_size, hunter_rect_size])
-        Rotator.hunter_image.set_colorkey((255,0,0))
         prey_rect_size = 2 * prey_view_range
         Rotator.prey_image = pygame.Surface([prey_rect_size, prey_rect_size])
-        Rotator.prey_image.set_colorkey((255,0,0))
 
         for angle in range(0, 360):
+
             rad_angle = math.radians(angle)
             hunter_x = math.sin(rad_angle) * hunter_view_range
             hunter_y = math.cos(rad_angle) * hunter_view_range
             prey_x = math.sin(rad_angle) * prey_view_range
             prey_y = math.cos(rad_angle) * prey_view_range
 
+            Rotator.hunter_image.set_colorkey((255,0,0))
+            Rotator.hunter_image.fill((255,0,0))
             hunter_ray = pygame.draw.line(
                 Rotator.hunter_image,
                 (0, 0, 255),
@@ -35,6 +37,8 @@ class  Rotator():
             Rotator.hunter_rays.append(hunter_ray)
             Rotator.hunter_masks.append(hunter_mask)
 
+            Rotator.prey_image.set_colorkey((255,0,0))
+            Rotator.prey_image.fill((255,0,0))
             prey_ray = pygame.draw.line(
                 Rotator.prey_image,
                 (0, 0, 255),

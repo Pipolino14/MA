@@ -4,6 +4,8 @@ import math
 from utils import *
 from Ray import *
 from Network import *
+from Globals import *
+
 
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
@@ -113,7 +115,7 @@ class Animal(pygame.sprite.Sprite):
 
     def visionray(self):
         faceangle =- math.radians(self.angle)
-        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * 100, self.y - math.cos(faceangle) * 100), 2)
+        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * vision_ray, self.y - math.cos(faceangle) * vision_ray), 2)
 
 
     def update(self, target_group) -> None:

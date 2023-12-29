@@ -3,66 +3,61 @@ import pygame.freetype as ft
 import matplotlib.pyplot as mpl
 import pandas as pd
 import datetime
+from Rotator import *
 
 from matplotlib.animation import FuncAnimation
 
 from utils import *
-from Animal import *
+#from Animal import *
 from Hunter import *
 from Prey import *
 from NetworkBuilder import *
+from Globals import *
 
+# Initialisierung
+pygame.init()
+run = True
+clock = pygame.time.Clock()
+#imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 
-#Frames Per Second Limiter
-FPS = 30
-VEL = 5
-
+framecount = 0
 myNetworkBuilder = NetworkBuilder(0, 0)
-
 GameHunter = pygame.sprite.Group()
 GamePrey = pygame.sprite.Group()
 hunterRepro = pygame.sprite.Group()
 preyRepro = pygame.sprite.Group()
-#EatingHunters = pygame.sprite.Group()
-
-def animate(Hpop, Ppop, CurrentTime):
-    mpl.cla()
-    mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop)
-    mpl.legend(["Hunters","Preys"])
-    mpl.xlabel('Zeit in Sekunden')
-    mpl.ylabel('Anzahl Tiere')
-    mpl.title('Populationsgrösse')
-    mpl.ion()
-    mpl.show()
-    mpl.pause(0.001)
-
-def Draw(win, images):
-    for img, pos in images:
-        win.blit(img, pos)
-    
-#    Hanimals = HunterAnimalsDictionary.values()
-#    Panimals = PreyAnimalsDictionary.values()
-    
-#    for hunter in Hanimals:
-#        hunter.draw(win)
-#    for prey in Panimals:
-#        prey.draw(win)
-    pygame.display.update()
-
 plot_ticks = []
 plot_hunter = []
 plot_prey = []
+font = ft.SysFont('Verdana', 20)
+
+def spawn_animals():
+    Rotator.create_rays(WIN, HUNTER_ROV, PREY_ROV)
+    for counter in range(numHunters):
+        GameHunter.add(HunterAnimal(WIN))
+
+    for counter in range(numPreys):
+        GamePrey.add(PreyAnimal(WIN))
+
 
 def check_collide():
     if pygame.sprite.groupcollide(GameHunter, GamePrey, False, False, None):
-        spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
+        spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, False, pygame.sprite.collide_mask)
         for hunter in spriteGroup.keys():
-            hunter.recharge()
-            hunter.fitness = hunter.fitness + 1
-            if hunter.fitness >= 2:
-                hunter.fitness = 0
-                newhunter = hunter.deepcopy()
-                hunterRepro.add(newhunter)
+            if hunter.no_hunt == 0:
+                GamePrey.remove(spriteGroup[hunter])
+                hunter.recharge()
+                hunter.fitness = hunter.fitness + 1
+                hunter.no_hunt = no_hunt_period
+                if hunter.fitness >= hunter_repro_fitness:
+                    hunter.fitness = 0
+                    newhunter = hunter.deepcopy()
+                    hunterRepro.add(newhunter)
+            # bouncing...
+            # else:
+            #     hunter.angle = hunter.angle + 180
+            #     if hunter.angle > 359:
+            #         hunter.angle -= 360
 
 def check_repro():
     Hlist = hunterRepro.sprites()
@@ -89,33 +84,23 @@ def check_repro():
         for crossPrey in Plist:
             crossPrey.Network = myNetworkBuilder.mutateNetwork_3(crossPrey.Network)
             GamePrey.add(crossPrey)
-            print("newprey", len(GamePrey.sprites()))
+            #print("newprey", len(GamePrey.sprites()))
         preyRepro.remove(Plist[0], Plist[1])
 
-def collided(H, P):
-    print(H, P)
-
-run = True
-clock = pygame.time.Clock()
-#images = [(BG_IMG, (0, 0)), (COLLIDER_IMG, (0,0))]
-imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
-
-#-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
-cords = 0
-numHunters = 100
-numPreys = 200
-#------------------------------------------------------------------------------------------------------------------
-
-for counter in range(numHunters):
-    GameHunter.add(HunterAnimal(WIN))
-
-for counter in range(numPreys):
-    GamePrey.add(PreyAnimal(WIN))
-
-pygame.init()
+#Graph Funktion:
+def animate(Hpop, Ppop, CurrentTime):
+    mpl.cla()
+    mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop)
+    mpl.legend(["Hunters","Preys"])
+    mpl.xlabel('Zeit in Sekunden')
+    mpl.ylabel('Anzahl Tiere')
+    mpl.title('Populationsgrösse')
+    mpl.ion()
+    mpl.show()
+    mpl.pause(0.001)
 
 
-font = ft.SysFont('Verdana', 20)
+#Info-Funktionen: Schreiben FPS und infos auf der Screen für debuggen
 
 def draw_fps():
     fps = f'{clock.get_fps() :.2f}FPS'
@@ -124,29 +109,29 @@ def draw_fps():
 def draw_info(text):
     font.render_to(WIN, (0, 100), text=text, fgcolor='green', bgcolor='black')
 
+#Data-Speicherfunktion. Speichert alle relevante Daten einer Simulation
 def storeData():
-    excelData = {"Zeit":plot_ticks, "Anz. Jäger": plot_hunter, "Anz. Beute": plot_prey}
+    if store_data:
+        excelData = {"Zeit":plot_ticks, "Anz. Jäger": plot_hunter, "Anz. Beute": plot_prey}
 
-    df = pd.DataFrame(excelData)
-    now_time = datetime.datetime.now()
-    filename =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.xlsx"
-    plotname =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.png"
-    df.to_excel(filename, index=False)
-    mpl.savefig(plotname)
+        df = pd.DataFrame(excelData)
+        now_time = datetime.datetime.now()
+        filename =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.xlsx"
+        plotname =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.png"
+        df.to_excel(filename, index=False)
+        mpl.savefig(plotname)
 
+spawn_animals()
 walker = HunterAnimal(WIN)
 walker.Network.empty_Network()
-
-framecount = 0
-
 #-----------------------------------------------GAMELOOP-----------------------------------------------
 
 while run:
     pygame.display.update()
     clock.tick(FPS)
-    WIN.blit(BG_IMG,(0, 0)) 
+    WIN.blit(BG_IMG,(0, 0))
     draw_fps()
-    
+
     GamePrey.update(GameHunter)
     GamePrey.draw(WIN)
     GameHunter.update(GamePrey)
@@ -156,12 +141,25 @@ while run:
 
     for prey in GamePrey:
         prey.fitness += 1
-        if prey.fitness >= 155:
+        if prey.fitness >= prey_reproduction:
             prey.fitness = 0
             newprey = prey.deepcopy()
+            #Position sollte um der Vatertier sein aber möglichst nicht die gleiche
+            range_x = random.randint(min_repro_range, max_repro_range)
+            range_y = random.randint(min_repro_range, max_repro_range)
+            shift_x = random.randint(-1, 1)
+            if shift_x == 0: shift_x = -1
+            shift_y = random.randint(-1, 1)
+            if shift_y == 0: shift_y = -1
+            newprey.x += shift_x * range_x
+            newprey.y += shift_y * range_y
+            # Verhindern dass sie aus der Spielfläche gespawnt werden:
+            newprey.x = min(newprey.x, WIDTH)
+            newprey.x = max(newprey.x, 0)
+            newprey.y = min(newprey.y, HEIGHT)
+            newprey.y = max(newprey.y, 0)
             preyRepro.add(newprey)
 
-    
     check_repro()
 
     hunter_pop = len(GameHunter.sprites())
@@ -171,7 +169,7 @@ while run:
     plot_prey.append(prey_pop)
 
     framecount += 1
-    if ((framecount % 30) == 0):
+    if ((framecount % graph_rate) == 0):
         framecount = 0
         animate(plot_hunter, plot_prey, plot_ticks)
     
