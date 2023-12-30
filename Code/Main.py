@@ -3,6 +3,7 @@ import pygame.freetype as ft
 import matplotlib.pyplot as mpl
 import pandas as pd
 import datetime
+import json
 from Rotator import *
 
 from matplotlib.animation import FuncAnimation
@@ -17,11 +18,11 @@ from Globals import *
 
 
 def spawn_animals(GameHunter, GamePrey):
-    Rotator.create_rays(WIN, HUNTER_ROV, PREY_ROV)
-    for counter in range(numHunters):
+    Rotator.create_rays(WIN, Globals.HUNTER_ROV, Globals.PREY_ROV)
+    for counter in range(Globals.numHunters):
         GameHunter.add(HunterAnimal(WIN))
 
-    for counter in range(numPreys):
+    for counter in range(Globals.numPreys):
         GamePrey.add(PreyAnimal(WIN))
 
 
@@ -33,8 +34,8 @@ def check_collide(GameHunter, GamePrey, hunterRepro):
                 GamePrey.remove(spriteGroup[hunter])
                 hunter.recharge()
                 hunter.fitness = hunter.fitness + 1
-                hunter.no_hunt = no_hunt_period
-                if hunter.fitness >= hunter_repro_fitness:
+                hunter.no_hunt = Globals.no_hunt_period
+                if hunter.fitness >= Globals.hunter_repro_fitness:
                     hunter.fitness = 0
                     newhunter = hunter.deepcopy()
                     hunterRepro.add(newhunter)
@@ -43,39 +44,51 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
     myNetworkBuilder = NetworkBuilder(0, 0)
     Hlist = hunterRepro.sprites()
     Plist = preyRepro.sprites()
-    if len(Hlist) >= 2:
+    while len(Hlist) >= 2:
         N1weights = Hlist[0].Network.weights
         N2weights = Hlist[1].Network.weights
         N1biases = Hlist[0].Network.biases
         N2biases = Hlist[1].Network.biases
         N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
         N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
-        for crossHunter in Hlist:
-            crossHunter.Network = myNetworkBuilder.mutateNetwork_3(crossHunter.Network)
-            GameHunter.add(crossHunter)
-        hunterRepro.remove(Hlist)
+        Hlist[0].Network.weights = N1weights
+        Hlist[0].Network.biases = N1biases
+        Hlist[1].Network.weights = N2weights
+        Hlist[1].Network.biases = N2biases
+        Hlist[0].Network = myNetworkBuilder.mutateNetwork_3(Hlist[0].Network)
+        Hlist[1].Network = myNetworkBuilder.mutateNetwork_3(Hlist[1].Network)
+        GameHunter.add(Hlist[0])
+        GameHunter.add(Hlist[1])
+        Hlist.pop(0)
+        Hlist.pop(0)
 
-    if len(Plist) >= 2:
+
+    while len(Plist) >= 2:
         N1weights = Plist[0].Network.weights
         N2weights = Plist[1].Network.weights
         N1biases = Plist[0].Network.biases
         N2biases = Plist[1].Network.biases
         N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
         N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
-        for crossPrey in Plist:
-            crossPrey.Network = myNetworkBuilder.mutateNetwork_3(crossPrey.Network)
-            GamePrey.add(crossPrey)
-            #print("newprey", len(GamePrey.sprites()))
-        preyRepro.remove(Plist[0], Plist[1])
+        Plist[0].Network.weights = N1weights
+        Plist[0].Network.biases = N1biases
+        Plist[1].Network.weights = N2weights
+        Plist[1].Network.biases = N2biases
+        Plist[0].Network = myNetworkBuilder.mutateNetwork_3(Plist[0].Network)
+        Plist[1].Network = myNetworkBuilder.mutateNetwork_3(Plist[1].Network)
+        GamePrey.add(Plist[0])
+        GamePrey.add(Plist[1])
+        Plist.pop(0)
+        Plist.pop(0)
 
 #Graph Funktion:
-def animate(Hpop, Ppop, CurrentTime):
+def animate(Hpop, Ppop, Gpop, CurrentTime):
     mpl.cla()
-    mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop)
-    mpl.legend(["Hunters","Preys"])
+    mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop, CurrentTime, Gpop)
+    mpl.legend(["Hunters","Preys","Tiere"])
     mpl.xlabel('Zeit in Sekunden')
     mpl.ylabel('Anzahl Tiere')
-    mpl.title('Populationsgrösse')
+    mpl.title('Populationsgrössen')
     mpl.ion()
     mpl.show()
     mpl.pause(0.001)
@@ -94,15 +107,36 @@ def draw_info(text):
 
 #Data-Speicherfunktion. Speichert alle relevante Daten einer Simulation
 def storeData(plot_ticks, plot_hunter, plot_prey):
-    if store_data:
+    if Globals.store_data:
         excelData = {"Zeit":plot_ticks, "Anz. Jäger": plot_hunter, "Anz. Beute": plot_prey}
+        configData = {"numHunters":Globals.numHunters, 
+                      "numPreys": Globals.numPreys,
+                      "hunter_energy":Globals.hunter_energy,
+                      "prey_energy":Globals.prey_energy,
+                      "Hunter FOV":Globals.HUNTER_FOV,
+                      "Prey FOV":Globals.PREY_FOV,
+                      "Hunter ROV":Globals.HUNTER_ROV,
+                      "Prey ROV":Globals.PREY_ROV,
+                      "Hunter repro":Globals.hunter_repro_fitness,
+                      "Prey repro":Globals.prey_reproduction,
+                      "Hunter Saturation":Globals.no_hunt_period,
+                      "Min Prey repro dis":Globals.min_repro_range,
+                      "Max Prey repro dis":Globals.max_repro_range,
+                      "Angle_factor":Globals.angle_factor,
+                      "Animal Size":Globals.animal_size
+                      }
 
+        dc = pd.DataFrame(configData, index=[0])
         df = pd.DataFrame(excelData)
         now_time = datetime.datetime.now()
         filename =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.xlsx"
+        configname = f"simdata/config-{now_time.strftime('%Y%m%d-%H-%M-%S')}.txt"
         plotname =f"simdata/hunters-preys-{now_time.strftime('%Y%m%d-%H-%M-%S')}.png"
         df.to_excel(filename, index=False)
         mpl.savefig(plotname)
+        json_object = json.dumps(configData, indent=4)
+        with open(configname, "w") as outfile:
+            outfile.write(json_object)
 
 
 #-----------------------------------------------GAMELOOP-----------------------------------------------
@@ -114,8 +148,9 @@ def runSimulation():
     #imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 
     #debug for globals
-    print(numHunters)
-    print(numPreys)
+    print(Globals.numHunters)
+    print(Globals.numPreys)
+    print(Globals.animal_size)
 
     framecount = 0
     
@@ -126,6 +161,7 @@ def runSimulation():
     plot_ticks = []
     plot_hunter = []
     plot_prey = []
+    plot_general = []
     
     spawn_animals(GameHunter, GamePrey)
     walker = HunterAnimal(WIN)
@@ -133,7 +169,7 @@ def runSimulation():
     
     while run:
         pygame.display.update()
-        clock.tick(FPS)
+        clock.tick(Globals.FPS)
         WIN.blit(BG_IMG,(0, 0))
         draw_fps(clock)
 
@@ -146,12 +182,12 @@ def runSimulation():
 
         for prey in GamePrey:
             prey.fitness += 1
-            if prey.fitness >= prey_reproduction:
+            if prey.fitness >= Globals.prey_reproduction:
                 prey.fitness = 0
                 newprey = prey.deepcopy()
                 #Position sollte um der Vatertier sein aber möglichst nicht die gleiche
-                range_x = random.randint(min_repro_range, max_repro_range)
-                range_y = random.randint(min_repro_range, max_repro_range)
+                range_x = random.randint(Globals.min_repro_range, Globals.max_repro_range)
+                range_y = random.randint(Globals.min_repro_range, Globals.max_repro_range)
                 shift_x = random.randint(-1, 1)
                 if shift_x == 0: shift_x = -1
                 shift_y = random.randint(-1, 1)
@@ -169,14 +205,16 @@ def runSimulation():
 
         hunter_pop = len(GameHunter.sprites())
         prey_pop = len(GamePrey.sprites())
+        general_pop = hunter_pop + prey_pop
         plot_ticks.append(pygame.time.get_ticks() / 1000)
         plot_hunter.append(hunter_pop)
         plot_prey.append(prey_pop)
+        plot_general.append(general_pop)
 
         framecount += 1
-        if ((framecount % graph_rate) == 0):
+        if ((framecount % Globals.graph_rate) == 0):
             framecount = 0
-            animate(plot_hunter, plot_prey, plot_ticks)
+            animate(plot_hunter, plot_prey, plot_general, plot_ticks)
         
         # if ((hunter_pop == 0) or (prey_pop == 0)):
         #     storeData(plot_ticks, plot_hunter, plot_prey)
@@ -208,4 +246,5 @@ def runSimulation():
                 break
     pygame.quit()
 
-#runSimulation()
+if __name__== "__main__":
+    runSimulation()

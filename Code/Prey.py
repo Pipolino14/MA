@@ -5,16 +5,16 @@ from utils import *
 from Globals import *
 
 class PreyAnimal(Animal):
-    IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), animal_size)
-    MASK = pygame.mask.from_surface(IMG)
-    IMGHEI = IMG.get_height()
-    IMGWID = IMG.get_height()
     def __init__(
         self,
         surface,
         posX = None,
         posY = None
         ):
+        self.IMG = scale_image(pygame.image.load("Code/Assets/prey.png"), Globals.animal_size)
+        self.MASK = pygame.mask.from_surface(self.IMG)
+        self.IMGHEI = self.IMG.get_height()
+        self.IMGWID = self.IMG.get_height()
         self.POSX = posX
         if posX == None:
             posX = random.randint(0, WIDTH)
@@ -26,9 +26,9 @@ class PreyAnimal(Animal):
         #self.STRTangle = random.randint(0, 360)
         #self.Angle_SPD = random.randint(3, 7)
         self.fitness = random.randint(0, 100)
-        self.Energy = prey_energy
+        self.Energy = Globals.prey_energy
         
-        Animal.__init__(self, "prey", surface, rays=5, FOV=PREY_FOV, ROV=PREY_ROV)
+        Animal.__init__(self, "prey", surface, rays=5, FOV=Globals.PREY_FOV, ROV=Globals.PREY_ROV)
 
         self.distances = [-1, -1, -1, -1, -1]
 

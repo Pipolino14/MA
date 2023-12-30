@@ -46,9 +46,9 @@ class Animal(pygame.sprite.Sprite):
         
     def rotate(self, turn_right, turn_angle):
         if turn_right:
-            self.angle += angle_factor * turn_angle
+            self.angle += Globals.angle_factor * turn_angle
         else:
-            self.angle -= angle_factor * turn_angle
+            self.angle -= Globals.angle_factor * turn_angle
 
     def move(self):
         #converting the current facing angle to RAD
@@ -103,7 +103,7 @@ class Animal(pygame.sprite.Sprite):
 
     def visionray(self):
         faceangle =- math.radians(self.angle)
-        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * vision_ray, self.y - math.cos(faceangle) * vision_ray), 2)
+        pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * Globals.vision_ray, self.y - math.cos(faceangle) * Globals.vision_ray), 2)
 
 
     def update(self, target_group) -> None:

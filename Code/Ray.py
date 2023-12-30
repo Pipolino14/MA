@@ -33,7 +33,7 @@ class Ray(pygame.sprite.Sprite):
                 other_pos = (spriteGroup[0].x, spriteGroup[0].y)
                 dist = math.dist(own_pos, other_pos)
                 if dist <= self.view_range:
-                    if show_target:
+                    if Globals.show_target:
                         see_Color = (0, 0, 255)
                         if (self.animal == "prey"):
                             see_Color = (0, 255, 255)
@@ -51,7 +51,7 @@ class Ray(pygame.sprite.Sprite):
     def update(self, pos, angle, animal_group):
         self.image.fill((255, 0, 0))  # Mit rot ausfüllen, rot ist für rays Transparent
         #Das hier ist um die vision Rays anzuzeigen.
-        if show_ray:
+        if Globals.show_ray:
             radians = math.radians(angle + self.angle_offset)
             self.yy = math.cos(radians) * self.view_range
             self.xx = math.sin(radians) * self.view_range
