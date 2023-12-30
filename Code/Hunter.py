@@ -21,12 +21,12 @@ class HunterAnimal(Animal):
         if posY == None:
             posY = random.randint(0, HEIGHT)
         self.START_POS = (posX, posY)
-        self.STRTvel = random.randint(1, 3)
-        self.STRTangle = random.randint(0, 360)
-        self.Angle_SPD = random.randint(3, 5)
+        #self.STRTvel = random.randint(1, 3)
+        #self.STRTangle = random.randint(0, 360)
+        #self.Angle_SPD = random.randint(3, 5)
         self.fitness = 0
         #self.FOVdis = 30
-        self.seen = 0
+        #self.seen = 0
         self.surface = surface
         self.Energy = hunter_energy
         self.no_hunt = 0
@@ -46,7 +46,7 @@ class HunterAnimal(Animal):
     #    self.distances[index] = distance
 
     def turningGraph(self, x):
-        x = (4 * (x - 0.5)**2)**2
+        x = (4 * (x - 0.5)**2)**1
         return x
     
     def hunt(self):
@@ -59,9 +59,6 @@ class HunterAnimal(Animal):
             netResult = self.Network.forward(self.distances)
             ResultTurn = self.turningGraph(netResult[0])
             ResultSpeed = self.turningGraph(netResult[1])
-            #print(netResult)
-            #print("H:",netResult)
-            #print(netResult[0], netResult[1])
 
             #Option 1: der Wert benutzen um mehr oder weniger zu drehen, gedrittelt
             if (netResult[0] < 0.5):
@@ -71,9 +68,9 @@ class HunterAnimal(Animal):
 
             #Speed:
             if netResult[1] > 0.5:
-                self.increase_speed(ResultSpeed * 0.2)
+                self.increase_speed(ResultSpeed)
             elif netResult[1] < 0.5:
-                self.reduce_speed(ResultSpeed * 0.2)
+                self.reduce_speed(ResultSpeed)
 
 
 
@@ -97,14 +94,11 @@ class HunterAnimal(Animal):
         if self.vel <= 3:
             self.vel = 3
 
-        
-
         if self.Energy <= 0:
             pygame.sprite.Sprite.kill(self)
         for index, ray in enumerate(self.rayGroup.sprites()):
             self.distances[index] = -1
-        #for (index, ray) in enumerate(self.rayGroup.sprites()):
-        #    ray.checkSeeAnimal(index, (self.x, self.y), preyGroup, self.seePrey)
+
         self.distances = Animal.update(self, preyGroup)
         self.hunt()
         if self.no_hunt > 0:

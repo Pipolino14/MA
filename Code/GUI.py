@@ -1,5 +1,6 @@
 import tkinter as tk
 import customtkinter as cti
+from PIL import Image
 from Main import *
 from Globals import *
 
@@ -8,10 +9,14 @@ cti.set_default_color_theme("dark-blue")
 
 root = cti.CTk()
 
-TitleFont = cti.CTkFont(family="Arial Black", size=20, underline=True)
-subTitleFont = cti.CTkFont(family="Arial Black", size=16)
-comFont = cti.CTkFont(family="Arial", size=12)
-comFontIta = cti.CTkFont(family="Arial", size=10, slant="italic")
+
+
+MainTitleFont = cti.CTkFont(family="Planet Kosmos", size=60, underline=True)
+StartFont = cti.CTkFont(family="Arial Black", weight="bold", size=40)
+TitleFont = cti.CTkFont(family="Arial Black", size=30, underline=True)
+subTitleFont = cti.CTkFont(family="Arial Black", size=20)
+comFont = cti.CTkFont(family="Arial", size=16)
+comFontIta = cti.CTkFont(family="Arial", size=14, slant="italic")
 
 root.title('Calculating of the Fittest')
 root.geometry('1920x1080')
@@ -88,6 +93,10 @@ def resizer(index):
     animal_size = (index/100)
     g_A_Size_Number.configure(text=f'Size: {index}%')
 
+def turnAngleSlider(angel):
+    angle_factor = (angel)
+    g_MAX_Turn_Number.configure(text=f'Max: {angel}°')
+
 def vRaySize(size):
     vision_ray = size
     g_Vray_Number.configure(text=f'Size: {size}px')
@@ -122,22 +131,29 @@ def goSimulate():
     #Hier Muss noch eine Funktion rein, welche das GUI Fenster schliesst
     runSimulation()
 
-w_pady = 10
-w_padx = 10
+w_pady = 5
+w_padx = 5
 
 pad_x = 5
 pad_y = 0
 
-Upper_frame = cti.CTkFrame(root, fg_color="#2a7a1d")
+TabFill = "both"
+
+Upper_frame = cti.CTkFrame(root, fg_color="#212121")
 Upper_frame.pack(side="top", fill="both", expand=True)
+Upper_frame.columnconfigure(0, weight=1)
+Upper_frame.rowconfigure(0, weight=1)
 
 Lower_frame = cti.CTkFrame(root, fg_color="#212121")
 Lower_frame.pack(side="top", fill="both", expand=True)
 
+bg_image = cti.CTkImage(dark_image=Image.open("Code/Assets/UI_Background.png"), size=(1920, 480))
 
 #---------------------------------------GENERAL-SETTINGS---------------------------------------
 GTab = cti.CTkFrame(Lower_frame, fg_color="#2a7a1d")
-GTab.pack(side="left", pady=w_pady, padx=w_padx, fill="x", expand=True)
+GTab.pack(side="left", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
+GTab.columnconfigure(0, weight=1)
+GTab.columnconfigure(1, weight=1)
 
 g_settings_label = cti.CTkLabel(GTab, text="General Settings", font=TitleFont)
 g_settings_label.grid(row=0, column=0, columnspan=2, padx=20, pady=20)
@@ -171,21 +187,31 @@ g_A_Size_tipp.grid(row=7, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_A_Size.grid(row=8, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_A_Size_Number.grid(row=9, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 
+g_MAX_Turn_label = cti.CTkLabel(GTab, text="Maximaler Drehwinkel in einem Frame", font=subTitleFont)
+g_MAX_Turn_tipp = cti.CTkLabel(GTab, text="(empfohlen: NOCH HERAUSFINDEN)", font=comFontIta)
+g_MAX_Turn = cti.CTkSlider(GTab, from_=0, to=50, number_of_steps=10, command=turnAngleSlider)
+g_MAX_Turn.set(angle_factor)
+g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Size: {g_A_Size.get()}%', font=comFont)
+g_MAX_Turn_label.grid(row=10, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_MAX_Turn_tipp.grid(row=11, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_MAX_Turn.grid(row=12, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_MAX_Turn_Number.grid(row=13, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+
 g_Vray_label = cti.CTkLabel(GTab, text="Länge des Richtungsvektor in Pixel", font=subTitleFont)
 g_Vray_tipp = cti.CTkLabel(GTab, text="(empfohlen: 20-40)", font=comFontIta)
 g_Vray = cti.CTkSlider(GTab, from_=0, to=100, number_of_steps=20, command=vRaySize)
 g_Vray.set(vision_ray)
 g_Vray_Number = cti.CTkLabel(GTab, text=f'Size: {g_A_Size.get()}px', font=comFont)
-g_Vray_label.grid(row=10, column=0, columnspan=2, padx=pad_x, pady=pad_y)
-g_Vray_tipp.grid(row=11, column=0, columnspan=2, padx=pad_x, pady=pad_y)
-g_Vray.grid(row=12, column=0, columnspan=2, padx=pad_x, pady=pad_y)
-g_Vray_Number.grid(row=13, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_Vray_label.grid(row=14, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_Vray_tipp.grid(row=15, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_Vray.grid(row=16, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_Vray_Number.grid(row=17, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 
 g_show_Ray = cti.CTkSwitch(GTab, text="show rays", font=subTitleFont, command=showrayToggle)
-g_show_Ray.grid(row=14, column=0, columnspan=2, padx=pad_x, pady=pad_y)
+g_show_Ray.grid(row=18, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 
 g_show_Target = cti.CTkSwitch(GTab, text="show target", font=subTitleFont, command=showtargetToggle)
-g_show_Target.grid(row=15, column=0, columnspan=2, padx=pad_x+5, pady=pad_y+5)
+g_show_Target.grid(row=19, column=0, columnspan=2, padx=pad_x+5, pady=pad_y+5)
 
 
 
@@ -196,6 +222,11 @@ g_show_Target.grid(row=15, column=0, columnspan=2, padx=pad_x+5, pady=pad_y+5)
 
 ATab = cti.CTkFrame(Lower_frame, fg_color="#006569")
 ATab.pack(side="left", pady=w_pady, padx=w_padx, fill="x", expand=True)
+ATab.columnconfigure(0, weight=1)
+ATab.columnconfigure(2, weight=1)
+
+print(ATab.cget("height"))
+print(ATab.cget("width"))
 
 hp_settings_label = cti.CTkLabel(ATab, text="Animal Einstellungen", font=TitleFont)
 hp_settings_label.grid(row=0, column=0, columnspan=3, padx=20, pady=20)
@@ -295,9 +326,12 @@ p_REP_Tipp.grid(row=19, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
 p_REP.grid(row=20, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 
+Bottom_Right_frame = cti.CTkFrame(Lower_frame, fg_color="#212121")
+Bottom_Right_frame.pack(side="left", fill=TabFill, expand=True)
 #-----------------------------------------RUN_SETTINGS-----------------------------------------
-RTab = cti.CTkFrame(Lower_frame, fg_color="#bd8339")
-RTab.pack(side="left", pady=w_pady, padx=w_padx, fill="x", expand=True)
+RTab = cti.CTkFrame(Bottom_Right_frame, fg_color="#bd8339")
+RTab.pack(side="top", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
+RTab.columnconfigure(0, weight=1)
 
 r_settings_label = cti.CTkLabel(RTab, text="Simulations Einstellungen", font=TitleFont)
 r_settings_label.grid(row=0, column=0, padx=20, pady=20)
@@ -322,7 +356,18 @@ r_GRA_tipp.grid(row=6, column=0, padx=pad_x, pady=pad_y)
 r_GRA.grid(row=7, column=0, padx=pad_x, pady=pad_y)
 r_GRA_Number.grid(row=8, column=0, padx=pad_x, pady=pad_y)
 
-run_btn = cti.CTkButton(RTab, text="Simulation Starten", command=goSimulate, font=TitleFont, fg_color="#FF1010")
-run_btn.grid(row=9, padx=10, pady=10, sticky=tk.E+tk.W)
+#-----------------------------------------START-FRAME------------------------------------------
+StartTab = cti.CTkFrame(Bottom_Right_frame, fg_color="#bf564e", height=100)
+StartTab.pack(side="top", pady=w_pady, padx=w_padx, fill="both")
+StartTab.columnconfigure(0, weight=1)
+StartTab.rowconfigure(0, weight=1)
+
+run_btn = cti.CTkButton(StartTab, text="Simulation Starten", height=StartTab.cget("height"), width=StartTab.cget("width"), command=goSimulate, font=StartFont, fg_color="#FF1616")
+run_btn.grid(padx=10, pady=10, sticky=tk.E+tk.W)
+
+#------------------------------------------TITLE-----------------------------------------------
+
+Title_label = cti.CTkLabel(Upper_frame, text="Calculating of the fittest", font=MainTitleFont, image=bg_image)
+Title_label.grid()
 
 root.mainloop()

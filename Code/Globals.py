@@ -22,6 +22,8 @@ PREY_FOV = 270
 numHunters = 80
 numPreys = 200
 #------------------------------------------------------------------------------------------------------------------
+#Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
+angle_factor = 20
 #Energie von den hunters und preys nach start oder nach hunters recharge
 hunter_energy = 900
 prey_energy = 400

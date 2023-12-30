@@ -38,11 +38,6 @@ def check_collide(GameHunter, GamePrey, hunterRepro):
                     hunter.fitness = 0
                     newhunter = hunter.deepcopy()
                     hunterRepro.add(newhunter)
-            # bouncing...
-            # else:
-            #     hunter.angle = hunter.angle + 180
-            #     if hunter.angle > 359:
-            #         hunter.angle -= 360
 
 def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
     myNetworkBuilder = NetworkBuilder(0, 0)
@@ -118,6 +113,10 @@ def runSimulation():
     clock = pygame.time.Clock()
     #imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 
+    #debug for globals
+    print(numHunters)
+    print(numPreys)
+
     framecount = 0
     
     GameHunter = pygame.sprite.Group()
@@ -131,6 +130,7 @@ def runSimulation():
     spawn_animals(GameHunter, GamePrey)
     walker = HunterAnimal(WIN)
     walker.Network.empty_Network()
+    
     while run:
         pygame.display.update()
         clock.tick(FPS)
@@ -178,9 +178,9 @@ def runSimulation():
             framecount = 0
             animate(plot_hunter, plot_prey, plot_ticks)
         
-        if ((hunter_pop == 0) or (prey_pop == 0)):
-            storeData(plot_ticks, plot_hunter, plot_prey)
-            run = False
+        # if ((hunter_pop == 0) or (prey_pop == 0)):
+        #     storeData(plot_ticks, plot_hunter, plot_prey)
+        #     run = False
 
         
         #---------------WALKER---------------

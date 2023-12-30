@@ -1,6 +1,7 @@
 from typing import Any
 import pygame
 import math
+import random
 from utils import *
 from Ray import *
 from Network import *
@@ -14,20 +15,19 @@ BG_IMG = BG_IMG.convert()
 WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 pygame.display.set_caption("Calculating of the fittest")
 
-MatrixLimit = 0.5
+MatrixLimit = 1
 
 class Animal(pygame.sprite.Sprite):
     def __init__(self, animal, surface, rays, FOV, ROV):
         pygame.sprite.Sprite.__init__(self)
         self.image = self.IMG
         self.rect = self.image.get_rect()
-        self.rect.center = (300, 300)
+        #self.rect.center = (300, 300)
         self.mask = self.MASK
-        self.vel = self.STRTvel
-        self.acceleration = 0.3
-        self.angle = self.STRTangle
-        #self.angle = math.radians(self.STRTangle)
-        self.angle_speed = self.Angle_SPD
+        self.vel = random.randint(0, 3)
+        #self.acceleration = 0.3
+        self.angle = random.randint(0, 360)
+        #self.angle_speed = 5
         self.x, self.y = self.START_POS
         self.surface = surface
         self.generation = 0
@@ -36,27 +36,15 @@ class Animal(pygame.sprite.Sprite):
         self.biases = [np.random.uniform(0, MatrixLimit, size=(1, 4)), np.random.uniform(0, MatrixLimit, size=(1, 2))]
         self.Network = Network(self.weights, self.biases)
 
-        
-
-
         for ray in range(rays):
             rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays) / 2)
             ray = Ray(animal, surface, ROV, rayAngle)
             self.rayGroup.add(ray)
-
-        self.id = id
     
     def newgen(self):
         self.generation += 1
-    
-    # def rotate(self, turnspeed, left=False, right=False):
-    #     if left==True:
-    #         self.angle += self.angle_speed * turnspeed
-    #     if right==True:
-    #         self.angle -= self.angle_speed * turnspeed
         
     def rotate(self, turn_right, turn_angle):
-        angle_factor = 30
         if turn_right:
             self.angle += angle_factor * turn_angle
         else:
@@ -82,11 +70,11 @@ class Animal(pygame.sprite.Sprite):
     def reduce_speed(self, red):
         self.vel = max(self.vel - red, 0)
     
-    def collision(self, mask, x=0, y=0):
-        animal_mask = pygame.mask.from_surface(self.image)
-        offset = (int(self.x - x), int(self.y - y))
-        touch = mask.overlap(animal_mask, offset)
-        return touch
+    # def collision(self, mask, x=0, y=0):
+    #     animal_mask = pygame.mask.from_surface(self.image)
+    #     offset = (int(self.x - x), int(self.y - y))
+    #     touch = mask.overlap(animal_mask, offset)
+    #     return touch
     
 
     def check_border(self):
@@ -109,9 +97,9 @@ class Animal(pygame.sprite.Sprite):
             self.angle = (360 - self.angle) 
             self.x = WID + 1
         
-    def rayupdate(self):
-        for ray in self.rayGroup.sprites():
-            ray.update(self.x, self.y, self.angle)
+    # def rayupdate(self):
+    #     for ray in self.rayGroup.sprites():
+    #         ray.update(self.x, self.y, self.angle)
 
     def visionray(self):
         faceangle =- math.radians(self.angle)
@@ -121,9 +109,6 @@ class Animal(pygame.sprite.Sprite):
     def update(self, target_group) -> None:
         self.move()
         self.check_border()
-
-        #with Pool() as pool:
-        #    pool.imap_unordered(self.rayupdate, self.rayGroup.sprites())
 
         if self.vel < 0:
             self.vel = 0

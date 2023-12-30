@@ -22,9 +22,9 @@ class PreyAnimal(Animal):
         if posY == None:
             posY = random.randint(0, HEIGHT)
         self.START_POS = (posX, posY)
-        self.STRTvel = random.randint(0, 1)
-        self.STRTangle = random.randint(0, 360)
-        self.Angle_SPD = random.randint(3, 7)
+        #self.STRTvel = random.randint(0, 1)
+        #self.STRTangle = random.randint(0, 360)
+        #self.Angle_SPD = random.randint(3, 7)
         self.fitness = random.randint(0, 100)
         self.Energy = prey_energy
         
@@ -42,7 +42,7 @@ class PreyAnimal(Animal):
             self.Energy += 0.5
     
     def turningGraph(self, x):
-        x = (4 * (x - 0.5)**2)**2
+        x = (4 * (x - 0.5)**2)**1
         return x
 
     #def seeHunter(self, index, distance):
@@ -56,25 +56,26 @@ class PreyAnimal(Animal):
             netResult = self.Network.forward(self.distances)
             ResultTurn = self.turningGraph(netResult[0])
             ResultSpeed = self.turningGraph(netResult[1])
-            #print(netResult)
-            #print("H:",netResult)
-            #print(netResult[0], netResult[1])
 
             #Option 1: der Wert benutzen um mehr oder weniger zu drehen, gedrittelt
             if (netResult[0] < 0.5):
                 self.rotate(turn_right=False, turn_angle=ResultTurn)
+                
             if (netResult[0] > 0.5):
                 self.rotate(turn_right=True, turn_angle=ResultTurn)
 
             #Speed:
             if netResult[1] > 0.5:
-                self.increase_speed(ResultSpeed * 0.2)
+                self.increase_speed(ResultSpeed)
             elif netResult[1] < 0.5:
-                self.reduce_speed(ResultSpeed * 0.2)
+                self.reduce_speed(ResultSpeed)
 
     def update(self, hunterGroup):
         if self.Energy >= 0:
             self.recharge()
         
+        for index, ray in enumerate(self.rayGroup.sprites()):
+            self.distances[index] = -1
+
         self.distances = Animal.update(self, hunterGroup)
         self.avoid()
