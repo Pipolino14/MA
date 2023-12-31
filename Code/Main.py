@@ -62,7 +62,6 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
         Hlist.pop(0)
         Hlist.pop(0)
 
-
     while len(Plist) >= 2:
         N1weights = Plist[0].Network.weights
         N2weights = Plist[1].Network.weights

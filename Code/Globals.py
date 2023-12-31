@@ -20,25 +20,25 @@ class Globals:
     PREY_FOV = 270
 
     #-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
-    numHunters = 80
-    numPreys = 200
+    numHunters = 40
+    numPreys = 100
     #------------------------------------------------------------------------------------------------------------------
     #Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
     angle_factor = 20
     #Energie von den hunters und preys nach start oder nach hunters recharge
-    hunter_energy = 900
+    hunter_energy = 600
     prey_energy = 400
     #Wie lang die hunters nach einer Jagd nicht jagen dürfen, in Frames
-    no_hunt_period = 5
+    no_hunt_period = 15
     #Wie oft sich die preys reproduzieren, in Frames
-    prey_reproduction = 200
+    prey_reproduction = 400
     #Wie viele Kills müssen die Hunters haben um sich zu reproduzieren
-    hunter_repro_fitness = 2
+    hunter_repro_fitness = 3
     # Range in denen die preys nahe ihre Eltern spawnen
     min_repro_range = 5
     max_repro_range = 15
     #Grösse der Tiere. Je kleiner, desto mehr "Platz" haben sie...
-    animal_size = 0.3
+    animal_size = 0.5
     #Wie oft die graph updated wird in Anzahl frames:
     graph_rate = 30
     #Zeigt die Vision rays der Tiere

@@ -268,7 +268,7 @@ p_label.grid(row=1, column=2)
 
 #FOV
 p_FOV_label = cti.CTkLabel(ATab, text="Sichtfeld in Grad", font=comFont)
-p_FOV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 35°-65°)", font=comFontIta)
+p_FOV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 180°-270°)", font=comFontIta)
 p_FOV = cti.CTkEntry(ATab, placeholder_text=Globals.PREY_FOV)
 p_FOV_label.grid(row=2, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_FOV_Tipp.grid(row=3, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -276,7 +276,7 @@ p_FOV.grid(row=4, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #ROV
 p_ROV_label = cti.CTkLabel(ATab, text="Sichtweite in Pixel", font=comFont)
-p_ROV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 250-400)", font=comFontIta)
+p_ROV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 150-250)", font=comFontIta)
 p_ROV = cti.CTkEntry(ATab, placeholder_text=Globals.PREY_ROV)
 p_ROV_label.grid(row=6, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_ROV_Tipp.grid(row=7, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -284,7 +284,7 @@ p_ROV.grid(row=8, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #Energy
 p_NRG_label = cti.CTkLabel(ATab, text="Energie in Frames", font=comFont)
-p_NRG_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 700-1200)", font=comFontIta)
+p_NRG_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 100-300)", font=comFontIta)
 p_NRG = cti.CTkEntry(ATab, placeholder_text=Globals.prey_energy)
 p_NRG_label.grid(row=10, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_NRG_Tipp.grid(row=11, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -299,8 +299,8 @@ p_DIS_Tipp.grid(row=15, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
 p_DIS.grid(row=16, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #Reproduction
-p_REP_label = cti.CTkLabel(ATab, text="Reproduktion in Anzahl geferssener Beute", font=comFont)
-p_REP_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 2-3)", font=comFontIta)
+p_REP_label = cti.CTkLabel(ATab, text="Reproduktion in Anzahl frames", font=comFont)
+p_REP_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 100-200)", font=comFontIta)
 p_REP = cti.CTkEntry(ATab, placeholder_text=Globals.prey_reproduction)
 p_REP_label.grid(row=18, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_REP_Tipp.grid(row=19, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
