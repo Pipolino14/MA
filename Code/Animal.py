@@ -6,14 +6,6 @@ from Ray import *
 from Network import *
 from Globals import *
 
-# #braucht es das?
-# BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-# WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
-# WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-# BG_IMG = BG_IMG.convert()
-# WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
-# pygame.display.set_caption("Calculating of the fittest")
-
 MatrixLimit = 0
 
 class Animal(pygame.sprite.Sprite):

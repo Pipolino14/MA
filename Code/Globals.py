@@ -1,10 +1,15 @@
 import pygame
 from utils import *
 
+pygame.init()
+pygame.display.init()
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 #WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIDTH, HEIGHT = 1400, 1400
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+flags = pygame.HWSURFACE | pygame.DOUBLEBUF
+#pygame.display.gl_set_attribute(GL_ACCELERATED_VISUAL, 1)
+SCRN = pygame.display.set_mode((WIDTH, HEIGHT), flags)
+WIN = pygame.Surface((WIDTH, HEIGHT), flags)
 BG_IMG = BG_IMG.convert()
 pygame.display.set_caption("Calculating of the fittest")
 
@@ -21,8 +26,8 @@ class Globals:
     PREY_FOV = 270
 
     #-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
-    numHunters = 40
-    numPreys = 160
+    numHunters = 100
+    numPreys = 100
     #------------------------------------------------------------------------------------------------------------------
     #Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
     angle_factor = 10

@@ -4,6 +4,7 @@ import matplotlib.pyplot as mpl
 import pandas as pd
 import datetime
 import json
+import sys
 from Rotator import *
 
 from matplotlib.animation import FuncAnimation
@@ -137,15 +138,18 @@ def storeData(plot_ticks, plot_hunter, plot_prey):
 #-----------------------------------------------GAMELOOP-----------------------------------------------
 def runSimulation():
     # Initialisierung
-    pygame.init()
+    #pygame.init()
     run = True
     clock = pygame.time.Clock()
     #imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
 
     #debug for globals
-    print(Globals.numHunters)
-    print(Globals.numPreys)
-    print(Globals.animal_size)
+    # print(Globals.numHunters)
+    # print(Globals.numPreys)
+    # print(Globals.animal_size)
+
+    print(pygame.display.Info())
+    print(pygame.display.get_driver())
 
     framecount = 0
     
@@ -164,9 +168,9 @@ def runSimulation():
     walker.Network.empty_Network()
     
     while run:
-        pygame.display.update()
         clock.tick(Globals.FPS)
-        WIN.blit(BG_IMG,(0, 0))
+        #WIN.blit(BG_IMG,(0, 0))
+        WIN.fill((0, 0, 0))
         draw_fps(clock)
 
         GamePrey.update(GameHunter)
@@ -238,6 +242,10 @@ def runSimulation():
         if keys[pygame.K_s]:
             walker.reduce_speed(0.3)
         #------------------------------------
+        
+        SCRN.blit(WIN, (0, 0))
+
+        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -245,6 +253,7 @@ def runSimulation():
                 run = False
                 break
     pygame.quit()
+    sys.exit()
 
 if __name__== "__main__":
     runSimulation()
