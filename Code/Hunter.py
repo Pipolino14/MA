@@ -1,53 +1,28 @@
-import pygame
-import random
+#import pygame
+#import random
 from Animal import *
 from utils import *
 from Globals import *
 class HunterAnimal(Animal):
-    def __init__(
-        self, 
-        surface,
-        posX = None,
-        posY = None
-        ):
-        self.IMG = scale_image(pygame.image.load("Code/Assets/hunter.png"), Globals.animal_size)
-        self.IMGHEI = self.IMG.get_height()
-        self.IMGWID = self.IMG.get_height()
-        self.MASK = pygame.mask.from_surface(self.IMG)
-        self.POSX = posX
-        if posX == None:
-            posX = random.randint(0, WIDTH)
-        self.POSY = posY
-        if posY == None:
-            posY = random.randint(0, HEIGHT)
-        self.START_POS = (posX, posY)
-        #self.STRTvel = random.randint(1, 3)
-        #self.STRTangle = random.randint(0, 360)
-        #self.Angle_SPD = random.randint(3, 5)
+    def __init__(self, surface, posX = None,posY = None):
         self.fitness = 0
-        #self.FOVdis = 30
-        #self.seen = 0
-        self.surface = surface
         self.Energy = Globals.hunter_energy
         self.no_hunt = 0
-    
-        #self.STRTangle = 0
-        Animal.__init__(self, "hunter", surface, rays=5, FOV=Globals.HUNTER_FOV, ROV=Globals.HUNTER_ROV)
 
-        #Distanzenliste für die Rays im Raycasting
-        self.distances = [-1, -1, -1, -1, -1]
+        Animal.__init__(self, "hunter", surface, posX, posY, rays=5,
+                        FOV=Globals.HUNTER_FOV, ROV=Globals.HUNTER_ROV)
+
+        self.distances = [0, 0, 0, 0, 0]
 
     def deepcopy(self):
         newhunter = HunterAnimal(self.surface, self.x, self.y)
+        newhunter.Network = self.Network
         newhunter.newgen()
         return newhunter
     
-    #def seePrey(self, index, distance):
-    #    self.distances[index] = distance
-
-    def turningGraph(self, x):
-        x = (4 * (x - 0.5)**2)**1
-        return x
+    # def turningGraph(self, x):
+    #     x = (4 * (x - 0.5)**2)**1
+    #     return x
     
     def hunt(self):
         if(True): #max(self.distances)> -1
@@ -57,19 +32,19 @@ class HunterAnimal(Animal):
             self.rayGroup.draw(self.surface)
 
             netResult = self.Network.forward(self.distances)
-            ResultTurn = self.turningGraph(netResult[0])
-            ResultSpeed = self.turningGraph(netResult[1])
+            ResultTurn = netResult[0]**2
+            ResultSpeed = netResult[1]**2
 
             #Option 1: der Wert benutzen um mehr oder weniger zu drehen, gedrittelt
-            if (netResult[0] < 0.5):
+            if (netResult[0] < 0):
                 self.rotate(turn_right=False, turn_angle=ResultTurn)
-            if (netResult[0] > 0.5):
+            if (netResult[0] > 0):
                 self.rotate(turn_right=True, turn_angle=ResultTurn)
 
             #Speed:
-            if netResult[1] > 0.5:
+            if netResult[1] > 0:
                 self.increase_speed(ResultSpeed)
-            elif netResult[1] < 0.5:
+            elif netResult[1] < 0:
                 self.reduce_speed(ResultSpeed)
 
 
@@ -96,6 +71,7 @@ class HunterAnimal(Animal):
 
         if self.Energy <= 0:
             pygame.sprite.Sprite.kill(self)
+
         for index, ray in enumerate(self.rayGroup.sprites()):
             self.distances[index] = -1
 

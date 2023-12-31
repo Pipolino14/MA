@@ -2,7 +2,8 @@ import pygame
 from utils import *
 
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+#WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+WIDTH, HEIGHT = 1400, 1400
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 BG_IMG = BG_IMG.convert()
 pygame.display.set_caption("Calculating of the fittest")
@@ -13,7 +14,7 @@ class Globals:
     VEL = 5
 
     #Range of View
-    HUNTER_ROV = 300
+    HUNTER_ROV = 400
     PREY_ROV = 200
     #Field of View
     HUNTER_FOV = 50
@@ -21,24 +22,24 @@ class Globals:
 
     #-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
     numHunters = 40
-    numPreys = 100
+    numPreys = 160
     #------------------------------------------------------------------------------------------------------------------
     #Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
-    angle_factor = 20
+    angle_factor = 10
     #Energie von den hunters und preys nach start oder nach hunters recharge
-    hunter_energy = 600
+    hunter_energy = 700
     prey_energy = 400
     #Wie lang die hunters nach einer Jagd nicht jagen dürfen, in Frames
     no_hunt_period = 15
     #Wie oft sich die preys reproduzieren, in Frames
-    prey_reproduction = 400
+    prey_reproduction = 360
     #Wie viele Kills müssen die Hunters haben um sich zu reproduzieren
-    hunter_repro_fitness = 3
+    hunter_repro_fitness = 2
     # Range in denen die preys nahe ihre Eltern spawnen
     min_repro_range = 5
     max_repro_range = 15
     #Grösse der Tiere. Je kleiner, desto mehr "Platz" haben sie...
-    animal_size = 0.5
+    animal_size = 0.3
     #Wie oft die graph updated wird in Anzahl frames:
     graph_rate = 30
     #Zeigt die Vision rays der Tiere

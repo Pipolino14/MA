@@ -175,7 +175,7 @@ g_MAX_Turn_label = cti.CTkLabel(GTab, text="Maximaler Drehwinkel in einem Frame"
 g_MAX_Turn_tipp = cti.CTkLabel(GTab, text="(empfohlen: NOCH HERAUSFINDEN)", font=comFontIta)
 g_MAX_Turn = cti.CTkSlider(GTab, from_=0, to=50, number_of_steps=10, command=turnAngleSlider)
 g_MAX_Turn.set(Globals.angle_factor)
-g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Size: {g_A_Size.get()}%', font=comFont)
+g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Size: {g_MAX_Turn.get()}°', font=comFont)
 g_MAX_Turn_label.grid(row=10, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_MAX_Turn_tipp.grid(row=11, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_MAX_Turn.grid(row=12, column=0, columnspan=2, padx=pad_x, pady=pad_y)

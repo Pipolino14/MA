@@ -43,9 +43,9 @@ class Ray(pygame.sprite.Sprite):
                     net_dist = inv_norm_dist - 1
                     self.distance = net_dist
                 else:
-                    self.distance = -1
+                    self.distance = 0
             else:
-                self.distance = -1
+                self.distance = 0
     
     #Update funktion. Definiert die Maske immer wieder je nach Position und Winkel des "Wirt-Tieres" 
     def update(self, pos, angle, animal_group):

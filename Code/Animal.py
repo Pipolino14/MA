@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 import math
 import random
@@ -7,35 +6,47 @@ from Ray import *
 from Network import *
 from Globals import *
 
+# #braucht es das?
+# BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
+# WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+# WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+# BG_IMG = BG_IMG.convert()
+# WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
+# pygame.display.set_caption("Calculating of the fittest")
 
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-BG_IMG = BG_IMG.convert()
-WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
-pygame.display.set_caption("Calculating of the fittest")
-
-MatrixLimit = 1
+MatrixLimit = 0
 
 class Animal(pygame.sprite.Sprite):
-    def __init__(self, animal, surface, rays, FOV, ROV):
+    def __init__(self, animal, surface, posX, posY, rays, FOV, ROV):
         pygame.sprite.Sprite.__init__(self)
-        self.image = self.IMG
+        if animal == "hunter":
+            self.image = scale_image(pygame.image.load(
+                "Code/Assets/hunter.png"),Globals.animal_size)
+        elif animal == "prey":
+            self.image = scale_image(pygame.image.load("Code/Assets/prey.png"), Globals.animal_size)
+        
         self.rect = self.image.get_rect()
-        #self.rect.center = (300, 300)
-        self.mask = self.MASK
+        self.mask = pygame.mask.from_surface(self.image)
         self.vel = random.randint(0, 3)
-        #self.acceleration = 0.3
         self.angle = random.randint(0, 360)
-        #self.angle_speed = 5
-        self.x, self.y = self.START_POS
+
+        if posX == None:
+            posX = random.randint(0, WIDTH)
+        if posY == None:
+            posY = random.randint(0, HEIGHT)
+        self.x = posX
+        self.y = posY
+
         self.surface = surface
         self.generation = 0
-        self.rayGroup = pygame.sprite.Group()
-        self.weights = [np.random.uniform(0, MatrixLimit, size=(5, 4)), np.random.uniform(0, MatrixLimit, size=(4, 2))]
-        self.biases = [np.random.uniform(0, MatrixLimit, size=(1, 4)), np.random.uniform(0, MatrixLimit, size=(1, 2))]
+
+        self.weights = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(5, 4)),
+                        np.random.uniform(-MatrixLimit, MatrixLimit, size=(4, 2))]
+        self.biases = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, 4)),
+                       np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, 2))]
         self.Network = Network(self.weights, self.biases)
 
+        self.rayGroup = pygame.sprite.Group()
         for ray in range(rays):
             rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays) / 2)
             ray = Ray(animal, surface, ROV, rayAngle)
@@ -78,8 +89,8 @@ class Animal(pygame.sprite.Sprite):
     
 
     def check_border(self):
-        HEI = (self.IMG.get_height()/2)
-        WID = (self.IMGWID/2)
+        HEI = (self.image.get_height()/2)
+        WID = (self.image.get_width()/2)
         #bottom
         if self.y > HEIGHT - HEI:
             self.angle = (360 - self.angle) + 180
@@ -106,12 +117,12 @@ class Animal(pygame.sprite.Sprite):
         pygame.draw.line(self.surface, (255, 0, 0), (self.x, self.y), (self.x + math.sin(faceangle) * Globals.vision_ray, self.y - math.cos(faceangle) * Globals.vision_ray), 2)
 
 
-    def update(self, target_group) -> None:
+    def update(self, target_group):
+        if self.vel < 0:
+            self.vel = 0
         self.move()
         self.check_border()
 
-        if self.vel < 0:
-            self.vel = 0
         self.rect.center=(self.x, self.y)
 
         self.rayGroup.update((self.x, self.y), self.angle, target_group)

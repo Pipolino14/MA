@@ -15,8 +15,6 @@ from Prey import *
 from NetworkBuilder import *
 from Globals import *
 
-
-
 def spawn_animals(GameHunter, GamePrey):
     Rotator.create_rays(WIN, Globals.HUNTER_ROV, Globals.PREY_ROV)
     for counter in range(Globals.numHunters):
@@ -25,20 +23,18 @@ def spawn_animals(GameHunter, GamePrey):
     for counter in range(Globals.numPreys):
         GamePrey.add(PreyAnimal(WIN))
 
-
-def check_collide(GameHunter, GamePrey, hunterRepro):
-    if pygame.sprite.groupcollide(GameHunter, GamePrey, False, False, None):
-        spriteGroup = pygame.sprite.groupcollide(GameHunter, GamePrey, False, False, pygame.sprite.collide_mask)
+def check_collide(HungryGameHunter, GamePrey, hunterRepro):
+    if pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, False, None):
+        spriteGroup = pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
         for hunter in spriteGroup.keys():
-            if hunter.no_hunt == 0:
-                GamePrey.remove(spriteGroup[hunter])
-                hunter.recharge()
-                hunter.fitness = hunter.fitness + 1
-                hunter.no_hunt = Globals.no_hunt_period
-                if hunter.fitness >= Globals.hunter_repro_fitness:
-                    hunter.fitness = 0
-                    newhunter = hunter.deepcopy()
-                    hunterRepro.add(newhunter)
+            hunter.recharge()
+            hunter.fitness = hunter.fitness + 1
+            hunter.no_hunt = Globals.no_hunt_period
+            HungryGameHunter.remove(hunter)
+            if hunter.fitness >= Globals.hunter_repro_fitness:
+                hunter.fitness = 0
+                newhunter = hunter.deepcopy()
+                hunterRepro.add(newhunter)
 
 def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
     myNetworkBuilder = NetworkBuilder(0, 0)
@@ -155,6 +151,7 @@ def runSimulation():
     
     GameHunter = pygame.sprite.Group()
     GamePrey = pygame.sprite.Group()
+    HungryGameHunter = pygame.sprite.Group()
     hunterRepro = pygame.sprite.Group()
     preyRepro = pygame.sprite.Group()
     plot_ticks = []
@@ -177,7 +174,11 @@ def runSimulation():
         GameHunter.update(GamePrey)
         GameHunter.draw(WIN)
 
-        check_collide(GameHunter, GamePrey, hunterRepro)
+        for hungry in GameHunter:
+            if hungry.no_hunt == 0:
+                HungryGameHunter.add(hungry)
+
+        check_collide(HungryGameHunter, GamePrey, hunterRepro)
 
         for prey in GamePrey:
             prey.fitness += 1
@@ -215,9 +216,9 @@ def runSimulation():
             framecount = 0
             animate(plot_hunter, plot_prey, plot_general, plot_ticks)
         
-        # if ((hunter_pop == 0) or (prey_pop == 0)):
-        #     storeData(plot_ticks, plot_hunter, plot_prey)
-        #     run = False
+        if ((hunter_pop == 0) or (prey_pop == 0)):
+            storeData(plot_ticks, plot_hunter, plot_prey)
+            run = False
 
         
         #---------------WALKER---------------

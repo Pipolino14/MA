@@ -12,7 +12,7 @@ class Network:
         #Input Layer: Inputs mit Gewichten multiplizieren und den Bias addieren
         hidden_layer_input = np.dot(dist, self.weights[0]) + self.biases[0]
         #Aktivierungsmethode(Sigmoid anwenden)
-        hidden_layer_output = self.sigmoid(hidden_layer_input)
+        hidden_layer_output = np.tanh(hidden_layer_input)
         #Hidden Layer: Hidden Layer mit Gewichten multiplizieren und den Bias addieren
         output_layer_input = np.dot(hidden_layer_output, self.weights[1]) + self.biases[1]
         #Nochmals Sigmoid anwenden
