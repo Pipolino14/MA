@@ -3,8 +3,7 @@ import math
 from utils import *
 from Globals import *
 
-class  Rotator():
-    
+class  Rotator:
     hunter_rays = []
     hunter_masks = []
     prey_rays = []

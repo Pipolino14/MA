@@ -6,10 +6,12 @@ pygame.display.init()
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 #WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIDTH, HEIGHT = 1400, 1400
+#flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.HIDDEN
 flags = pygame.HWSURFACE | pygame.DOUBLEBUF
 #pygame.display.gl_set_attribute(GL_ACCELERATED_VISUAL, 1)
 SCRN = pygame.display.set_mode((WIDTH, HEIGHT), flags)
-WIN = pygame.Surface((WIDTH, HEIGHT), flags)
+WIN = pygame.surface.Surface((WIDTH, HEIGHT), flags)
+
 BG_IMG = BG_IMG.convert()
 pygame.display.set_caption("Calculating of the fittest")
 
@@ -19,27 +21,31 @@ class Globals:
     VEL = 5
 
     #Range of View
-    HUNTER_ROV = 400
+    HUNTER_ROV = 300
     PREY_ROV = 200
     #Field of View
     HUNTER_FOV = 50
     PREY_FOV = 270
 
     #-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
-    numHunters = 100
-    numPreys = 100
+    numHunters = 40
+    numPreys = 250
     #------------------------------------------------------------------------------------------------------------------
     #Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
-    angle_factor = 10
+    angle_factor = 15
+    #Anzahl Neuronen in der Hidden Layer.
+    hiddenN = 2
+    #Maximale Mutations addierung/subtrahierung
+    
     #Energie von den hunters und preys nach start oder nach hunters recharge
-    hunter_energy = 700
+    hunter_energy = 900
     prey_energy = 400
     #Wie lang die hunters nach einer Jagd nicht jagen dürfen, in Frames
-    no_hunt_period = 15
+    no_hunt_period = 10
     #Wie oft sich die preys reproduzieren, in Frames
     prey_reproduction = 360
     #Wie viele Kills müssen die Hunters haben um sich zu reproduzieren
-    hunter_repro_fitness = 2
+    hunter_repro_fitness = 3
     # Range in denen die preys nahe ihre Eltern spawnen
     min_repro_range = 5
     max_repro_range = 15

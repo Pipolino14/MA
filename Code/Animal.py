@@ -32,9 +32,9 @@ class Animal(pygame.sprite.Sprite):
         self.surface = surface
         self.generation = 0
 
-        self.weights = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(5, 4)),
-                        np.random.uniform(-MatrixLimit, MatrixLimit, size=(4, 2))]
-        self.biases = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, 4)),
+        self.weights = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(5, Globals.hiddenN)),
+                        np.random.uniform(-MatrixLimit, MatrixLimit, size=(Globals.hiddenN, 2))]
+        self.biases = [np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, Globals.hiddenN)),
                        np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, 2))]
         self.Network = Network(self.weights, self.biases)
 
@@ -72,13 +72,6 @@ class Animal(pygame.sprite.Sprite):
     
     def reduce_speed(self, red):
         self.vel = max(self.vel - red, 0)
-    
-    # def collision(self, mask, x=0, y=0):
-    #     animal_mask = pygame.mask.from_surface(self.image)
-    #     offset = (int(self.x - x), int(self.y - y))
-    #     touch = mask.overlap(animal_mask, offset)
-    #     return touch
-    
 
     def check_border(self):
         HEI = (self.image.get_height()/2)
@@ -99,10 +92,6 @@ class Animal(pygame.sprite.Sprite):
         if self.x < WID:
             self.angle = (360 - self.angle) 
             self.x = WID + 1
-        
-    # def rayupdate(self):
-    #     for ray in self.rayGroup.sprites():
-    #         ray.update(self.x, self.y, self.angle)
 
     def visionray(self):
         faceangle =- math.radians(self.angle)

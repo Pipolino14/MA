@@ -1,0 +1,17 @@
+{
+    "numHunters": 50,
+    "numPreys": 250,
+    "hunter_energy": 800,
+    "prey_energy": 400,
+    "Hunter FOV": 50,
+    "Prey FOV": 270,
+    "Hunter ROV": 300,
+    "Prey ROV": 200,
+    "Hunter repro": 2,
+    "Prey repro": 400,
+    "Hunter Saturation": 20,
+    "Min Prey repro dis": 5,
+    "Max Prey repro dis": 15,
+    "Angle_factor": 15,
+    "Animal Size": 0.3
+}

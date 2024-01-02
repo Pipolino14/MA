@@ -4,6 +4,7 @@ import math
 from utils import *
 from Rotator import *
 from Globals import *
+from functools import cache
 
 # Diese Klasse generiert einen einzelnen Sichstrahl, der Collisionen mit einer bestimmte 
 # Gruppe detektiert und die Distanz zwischen das Tier wo diesen Strahl "besitzt" (Wirt-Tier)
@@ -20,7 +21,7 @@ class Ray(pygame.sprite.Sprite):
         self.image.set_colorkey((255, 0, 0))  # Rot ist als Transparente Farbe gesetzt
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.distance = -1
+        self.distance = 0
 
     # Checkt ob man ein Tier in einer Gruppe sieht (Hunter oder Prey) und gibt die 
     # Distanz weiter an eine Callback Funktion

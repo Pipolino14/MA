@@ -20,49 +20,29 @@ class HunterAnimal(Animal):
         newhunter.newgen()
         return newhunter
     
-    # def turningGraph(self, x):
-    #     x = (4 * (x - 0.5)**2)**1
-    #     return x
-    
     def hunt(self):
-        if(True): #max(self.distances)> -1
-            #print(self.distances)
+        if max(self.distances)> 0:
             # macht alle rays sichtbar, falls der hunter etwas sieht
-            #print(np.around(self.distances, 1))
             self.rayGroup.draw(self.surface)
-
+            
+            # führt die forward Funktion im Neuralen Netzwerk aus, sobald die Rays etwas sehen.
             netResult = self.Network.forward(self.distances)
+            
+            #Änderung des Winkels
             ResultTurn = netResult[0]**2
-            ResultSpeed = netResult[1]**2
-
-            #Option 1: der Wert benutzen um mehr oder weniger zu drehen, gedrittelt
             if (netResult[0] < 0):
                 self.rotate(turn_right=False, turn_angle=ResultTurn)
-            if (netResult[0] > 0):
+            elif (netResult[0] > 0):
                 self.rotate(turn_right=True, turn_angle=ResultTurn)
 
-            #Speed:
+            #Änderung der Geschwindigkeit
+            ResultSpeed = netResult[1]**2
             if netResult[1] > 0:
                 self.increase_speed(ResultSpeed)
             elif netResult[1] < 0:
                 self.reduce_speed(ResultSpeed)
 
-
-
-
-            # if self.Network.forward(self.distances)[0] < 0.33:
-            #     self.rotate(left=True)
-            # elif self.Network.forward(self.distances)[0] > 0.66:
-            #     self.rotate(right=True)
-            # if self.Network.forward(self.distances)[1] > 0.66:
-            #     self.increase_speed(0.1)
-            # elif self.Network.forward(self.distances)[1] < 0.33:
-            #     self.reduce_speed(0.1)
-    
-
-
     def recharge(self):
-        #self.Energy = self.Energy + 600
         self.Energy = Globals.hunter_energy
 
     def update(self, preyGroup):
@@ -71,9 +51,6 @@ class HunterAnimal(Animal):
 
         if self.Energy <= 0:
             pygame.sprite.Sprite.kill(self)
-
-        for index, ray in enumerate(self.rayGroup.sprites()):
-            self.distances[index] = -1
 
         self.distances = Animal.update(self, preyGroup)
         self.hunt()

@@ -1,4 +1,5 @@
 import numpy as np
+from functools import cache
 
 class Network:
     def __init__(self, weights, biases):
@@ -6,8 +7,8 @@ class Network:
         self.biases = biases
     
     def sigmoid(self, x):
-            return 1 / (1 + np.exp(-x))   
-
+            return 1 / (1 + np.exp(-x))  
+    
     def forward(self, dist):
         #Input Layer: Inputs mit Gewichten multiplizieren und den Bias addieren
         hidden_layer_input = np.dot(dist, self.weights[0]) + self.biases[0]

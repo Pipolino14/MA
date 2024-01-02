@@ -29,22 +29,22 @@ class PreyAnimal(Animal):
     #     return x
 
     def avoid(self):
-        if(True): # max(self.distances)> -1
+        if max(self.distances)> 0:
             # macht alle rays sichtbar, falls der hunter etwas sieht
             self.rayGroup.draw(self.surface)
+            
             # führt die forward Funktion im Neuralen Netzwerk aus, sobald die Rays etwas sehen.
             netResult = self.Network.forward(self.distances)
+            
+            #Änderung des Winkels
             ResultTurn = netResult[0]**2
-            ResultSpeed = netResult[1]**2
-
-            #Option 1: der Wert benutzen um mehr oder weniger zu drehen, gedrittelt
             if (netResult[0] < 0):
                 self.rotate(turn_right=False, turn_angle=ResultTurn)
-                
-            if (netResult[0] > 0):
+            elif (netResult[0] > 0):
                 self.rotate(turn_right=True, turn_angle=ResultTurn)
 
-            #Speed:
+            #Änderung der Geschwindigkeit
+            ResultSpeed = netResult[1]**2
             if netResult[1] > 0:
                 self.increase_speed(ResultSpeed)
             elif netResult[1] < 0:
@@ -53,9 +53,6 @@ class PreyAnimal(Animal):
     def update(self, hunterGroup):
         if self.Energy >= 0:
             self.recharge()
-        
-        for index, ray in enumerate(self.rayGroup.sprites()):
-            self.distances[index] = -1
 
         self.distances = Animal.update(self, hunterGroup)
         self.avoid()

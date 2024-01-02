@@ -5,6 +5,8 @@ import pandas as pd
 import datetime
 import json
 import sys
+import time
+from functools import cache
 from Rotator import *
 
 from matplotlib.animation import FuncAnimation
@@ -46,14 +48,14 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
         N2weights = Hlist[1].Network.weights
         N1biases = Hlist[0].Network.biases
         N2biases = Hlist[1].Network.biases
-        N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
-        N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
+        N1weights, N2weights = myNetworkBuilder.crossoverWeights(N1weights, N2weights)
+        N1biases, N2biases = myNetworkBuilder.crossoverBiases(N1biases, N2biases)
         Hlist[0].Network.weights = N1weights
         Hlist[0].Network.biases = N1biases
         Hlist[1].Network.weights = N2weights
         Hlist[1].Network.biases = N2biases
-        Hlist[0].Network = myNetworkBuilder.mutateNetwork_3(Hlist[0].Network)
-        Hlist[1].Network = myNetworkBuilder.mutateNetwork_3(Hlist[1].Network)
+        Hlist[0].Network = myNetworkBuilder.mutateNetwork(Hlist[0].Network)
+        Hlist[1].Network = myNetworkBuilder.mutateNetwork(Hlist[1].Network)
         GameHunter.add(Hlist[0])
         GameHunter.add(Hlist[1])
         Hlist.pop(0)
@@ -64,14 +66,14 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
         N2weights = Plist[1].Network.weights
         N1biases = Plist[0].Network.biases
         N2biases = Plist[1].Network.biases
-        N1weights[0], N2weights[0], N1weights[1], N2weights[1] = myNetworkBuilder.crossoverWeights(N1weights[0], N2weights[0], N1weights[1], N2weights[1])
-        N1biases[0], N2biases[0], N1biases[1], N2biases[1] = myNetworkBuilder.crossoverBiases(N1biases[0], N2biases[0], N1biases[1], N2biases[1])
+        N1weights, N2weights = myNetworkBuilder.crossoverWeights(N1weights, N2weights)
+        N1biases, N2biases = myNetworkBuilder.crossoverBiases(N1biases, N2biases)
         Plist[0].Network.weights = N1weights
         Plist[0].Network.biases = N1biases
         Plist[1].Network.weights = N2weights
         Plist[1].Network.biases = N2biases
-        Plist[0].Network = myNetworkBuilder.mutateNetwork_3(Plist[0].Network)
-        Plist[1].Network = myNetworkBuilder.mutateNetwork_3(Plist[1].Network)
+        Plist[0].Network = myNetworkBuilder.mutateNetwork(Plist[0].Network)
+        Plist[1].Network = myNetworkBuilder.mutateNetwork(Plist[1].Network)
         GamePrey.add(Plist[0])
         GamePrey.add(Plist[1])
         Plist.pop(0)
@@ -139,6 +141,9 @@ def storeData(plot_ticks, plot_hunter, plot_prey):
 def runSimulation():
     # Initialisierung
     #pygame.init()
+
+    start = time.time()
+
     run = True
     clock = pygame.time.Clock()
     #imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
@@ -170,7 +175,7 @@ def runSimulation():
     while run:
         clock.tick(Globals.FPS)
         #WIN.blit(BG_IMG,(0, 0))
-        WIN.fill((0, 0, 0))
+        WIN.fill((0, 150, 0))
         draw_fps(clock)
 
         GamePrey.update(GameHunter)
@@ -241,6 +246,8 @@ def runSimulation():
             walker.increase_speed(0.3)
         if keys[pygame.K_s]:
             walker.reduce_speed(0.3)
+        if keys[pygame.K_ESCAPE]:
+            event.type == pygame.QUIT
         #------------------------------------
         
         SCRN.blit(WIN, (0, 0))
@@ -250,6 +257,8 @@ def runSimulation():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 storeData(plot_ticks, plot_hunter, plot_prey)
+                end = time.time()
+                print(end - start)
                 run = False
                 break
     pygame.quit()

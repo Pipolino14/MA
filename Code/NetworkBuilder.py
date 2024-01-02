@@ -11,37 +11,57 @@ class NetworkBuilder:
         biases = [np.random.randn(4), np.random.randn(2)]
         return weights, biases
     
-    def crossoverWeights(self, N1weights_1, N2weights_1, N1weights_2, N2weights_2):
-        #mit .shape finde ich for formen heraus [5, 4] und [4, 2] ich verwende hier nur die Zeilen, da die Reihen immer einen Bias haben und danach die nachfolgenden Weights
+    def crossoverWeights(N1weights, N2weights):
+        # spalte die zwei Weight Layers von den Netzwerken auseinander
+        N1weights_1 = N1weights[0]
+        N1weights_2 = N1weights[1]
+        N2weights_1 = N2weights[0]
+        N2weights_2 = N2weights[1]
+
+        # .shape findet unterschiedliche formen der Layers.
+        # -->(Anz. Reihen, Anz. Spalten)
         weightsLane_1 = N1weights_1.shape
         weightsLane_2 = N1weights_2.shape
 
-        #hier wählt es zufällig zwei Zeilen aus, um das Crossover zu machen
-        crossoverWeights_1 = np.random.randint(1, weightsLane_1[0])
-        crossoverWeights_2 = np.random.randint(1, weightsLane_2[0])
+        # zufällig crossoverpoint auswählen in Anz.Reihen
+        point_layer_1 = np.random.randint(1, weightsLane_1[1])
+        point_layer_2 = np.random.randint(1, weightsLane_2[1])
 
-        #hier addiert es den ersten Teil der ersten Matrix mit dem anderen der 2. und das gleiche auch noch umgekehrt --> Crossover wird hier durchgeführt
-        newWeightsN1_1 = np.hstack((N1weights_1[:, :crossoverWeights_1], N2weights_1[:, crossoverWeights_1:]))
-        newWeightsN2_1 = np.hstack((N2weights_1[:, :crossoverWeights_1], N1weights_1[:, crossoverWeights_1:]))
-        newWeightsN1_2 = np.hstack((N1weights_2[:, :crossoverWeights_2], N2weights_2[:, crossoverWeights_2:]))
-        newWeightsN2_2 = np.hstack((N2weights_2[:, :crossoverWeights_2], N1weights_2[:, crossoverWeights_2:]))
+        # crossover beider Matrizen der hidden Layer
+        newWeightsN1_1 = np.hstack((N1weights_1[:, :point_layer_1], N2weights_1[:, point_layer_1:]))
+        newWeightsN2_1 = np.hstack((N2weights_1[:, :point_layer_1], N1weights_1[:, point_layer_1:]))
 
-        return newWeightsN1_1, newWeightsN2_1, newWeightsN1_2, newWeightsN2_2
+        # crossover beider Matrizen der Output Layer
+        newWeightsN1_2 = np.hstack((N1weights_2[:, :point_layer_2], N2weights_2[:, point_layer_2:]))
+        newWeightsN2_2 = np.hstack((N2weights_2[:, :point_layer_2], N1weights_2[:, point_layer_2:]))
+
+        newWeightsN1 = [newWeightsN1_1, newWeightsN1_2]
+        newWeightsN2 = [newWeightsN2_1, newWeightsN2_2]
+
+        return newWeightsN1, newWeightsN2
     
-    def crossoverBiases(self, N1biases_1, N2biases_1, N1biases_2, N2biases_2):
-        #das Gleiche Prinzip, wie bei crossoverWeights mit dem Unterschied, dass für Vektoren die funktion concentrate verwendet werden muss.
+    def crossoverBiases(self, BiasesN1, BiasesN2):
+        # das Gleiche Prinzip, wie bei crossoverWeights mit dem Unterschied, dass für Vektoren die funktion .concentrate() anstatt .hstackverwendet() werden muss.
+        N1biases_1 = BiasesN1[0]
+        N1biases_2 = BiasesN1[1]
+        N2biases_1 = BiasesN2[0]
+        N2biases_2 = BiasesN2[1]
+
         biasesLane_1 = N1biases_1.shape
         biasesLane_2 = N1biases_2.shape
 
-        crossoverBiases_1 = np.random.randint(1, biasesLane_1[1])
-        crossoverBiases_2 = np.random.randint(1, biasesLane_2[1])
+        point_layer_1 = np.random.randint(1, biasesLane_1[1])
+        point_layer_2 = np.random.randint(1, biasesLane_2[1])
 
-        newBiasesN1_1 = np.concatenate((N1biases_1[:crossoverBiases_1], N2biases_1[crossoverBiases_1:]))
-        newBiasesN2_1 = np.concatenate((N2biases_1[:crossoverBiases_1], N1biases_1[crossoverBiases_1:]))
-        newBiasesN1_2 = np.concatenate((N1biases_2[:crossoverBiases_2], N2biases_2[crossoverBiases_2:]))
-        newBiasesN2_2 = np.concatenate((N2biases_2[:crossoverBiases_2], N1biases_2[crossoverBiases_2:]))
+        newBiasesN1_1 = np.concatenate((N1biases_1[:point_layer_1], N2biases_1[point_layer_1:]))
+        newBiasesN2_1 = np.concatenate((N2biases_1[:point_layer_1], N1biases_1[point_layer_1:]))
+        newBiasesN1_2 = np.concatenate((N1biases_2[:point_layer_2], N2biases_2[point_layer_2:]))
+        newBiasesN2_2 = np.concatenate((N2biases_2[:point_layer_2], N1biases_2[point_layer_2:]))
+
+        newBiasesN1 = [newBiasesN1_1, newBiasesN1_2]
+        newBiasesN2 = [newBiasesN2_1, newBiasesN2_2]
             
-        return newBiasesN1_1, newBiasesN2_1, newBiasesN1_2, newBiasesN2_2
+        return newBiasesN1, newBiasesN2
 
     #Diese Mutation macht eine random Matrix und addiert diese zur vorherigen Matrix.
     #Problem: Diese Funktion addiert nur und mit der Zeit werden alle Weights/Biases in Richtung 1 gehen.
@@ -69,24 +89,34 @@ class NetworkBuilder:
     # 4. Die Multipliziert diese Matrix nun mit der ersten matrix, sodass nur wenige Werte mit der schlussendlichen Matrix multipliziert werden.
     # Der Grund warum ich Schritt 3 gemacht habe ist, dass die wahrscheinlichkeit einer Änderung der Zahl bei 2/3 liegt. Das finde ich zu hoch.
     # Mit Schritt 3 ist diese Wahrscheinlichkeit der Änderung 1/3 und ich kann diese auch wiederholen.
-    def mutateNetwork_3(self, inputNetwork):
+    def mutateNetwork(self, inputNetwork):
+        input_Weights_1 = inputNetwork.weights[0]
+        input_Weights_2 = inputNetwork.weights[1]
+        input_Biases_1 = inputNetwork.biases[0]
+        input_Biases_2 = inputNetwork.biases[1]
+
+        WeightSize_1 = input_Weights_1.shape
+        WeightSize_2 = input_Weights_2.shape
+        BiasSize_1 = input_Biases_1.shape
+        BiasSize_2 = input_Biases_2.shape
+
         #Mache random Matrizen, welcher von -0.1 bis 0.1 gehen kann
-        mutWeights_1 = np.random.uniform(low=-0.1, high=0.1, size=(5, 4)) 
-        mutWeights_2 = np.random.uniform(low=-0.1, high=0.1, size=(4, 2))
-        mutBiases_1 = np.random.uniform(low=-0.1, high=0.1, size=4)
-        mutBiases_2 = np.random.uniform(low=-0.1, high=0.1, size=2)
+        mutWeights_1 = np.random.uniform(low=-0.1, high=0.1, size=WeightSize_1) 
+        mutWeights_2 = np.random.uniform(low=-0.1, high=0.1, size=WeightSize_2)
+        mutBiases_1 = np.random.uniform(low=-0.1, high=0.1, size=BiasSize_1)
+        mutBiases_2 = np.random.uniform(low=-0.1, high=0.1, size=BiasSize_2)
 
         #Hier kreiere ich eine Matrix, welche entweder -1, 0, 1 enthalten kann. Dies mache ich für alle Matrizen.
-        Weights_1_rng = np.random.randint(low=-1, high=2, size=(5, 4))
-        Weights_2_rng = np.random.randint(low=-1, high=2, size=(4, 2))
-        Biases_1_rng = np.random.randint(low=-1, high=2, size=4)
-        Biases_2_rng = np.random.randint(low=-1, high=2, size=2)
+        Weights_1_rng = np.random.randint(low=-1, high=2, size=WeightSize_1)
+        Weights_2_rng = np.random.randint(low=-1, high=2, size=WeightSize_2)
+        Biases_1_rng = np.random.randint(low=-1, high=2, size=BiasSize_1)
+        Biases_2_rng = np.random.randint(low=-1, high=2, size=BiasSize_2)
 
         #Da bei der vorherigen immernoch ein grossteil der Nummern geändert werden, kreiere ich hier Matrizen mit nur 1 oder 0 und multipliziere diese mit der vorherigen Matrix.
-        Weights_1_rng = Weights_1_rng * np.random.randint(2, size=(5, 4))
-        Weights_2_rng = Weights_2_rng * np.random.randint(2, size=(4, 2))
-        Biases_1_rng = Biases_1_rng * np.random.randint(2, size=4)
-        Biases_2_rng = Biases_2_rng * np.random.randint(2, size=2)
+        Weights_1_rng = Weights_1_rng * np.random.randint(2, size=WeightSize_1)
+        Weights_2_rng = Weights_2_rng * np.random.randint(2, size=WeightSize_2)
+        Biases_1_rng = Biases_1_rng * np.random.randint(2, size=BiasSize_1)
+        Biases_2_rng = Biases_2_rng * np.random.randint(2, size=BiasSize_2)
 
         #Jetzt multipliziere ich die rng matrizen mit den random Matrizen, dass nun nur in spezifischen orten ein wechsel stattgefunden hat und dieser nur leicht Positiv, sowie auch nur leicht negativ sein kann.
         selWeights1 = mutWeights_1 * Weights_1_rng
@@ -95,8 +125,8 @@ class NetworkBuilder:
         selBiases2 = mutBiases_2 * Biases_2_rng
         
         #Jetzt adiere ich diese leiche Änderungen zur inputMatrix und returne diese danach. 
-        newweights = [np.add(inputNetwork.weights[0] , selWeights1) , np.add(inputNetwork.weights[1] , selWeights2)]
-        newbiases = [np.add(inputNetwork.biases[0] , selBiases1) , np.add(inputNetwork.biases[1] , selBiases2)]
+        newweights = [np.add(input_Weights_1 , selWeights1) , np.add(input_Weights_2 , selWeights2)]
+        newbiases = [np.add(input_Biases_1, selBiases1) , np.add(input_Biases_2, selBiases2)]
 
         outputNetwork = Network(newweights, newbiases)
         return outputNetwork
