@@ -4,12 +4,13 @@ from PIL import Image
 from Main import *
 from Globals import *
 
+# Dieses Modul enthält die GUI. Damit kann man komfortabler 
+# die globale Settings vor einer Simulation ändern.
+
 cti.set_appearance_mode("dark")
 cti.set_default_color_theme("dark-blue")
 
 root = cti.CTk()
-
-
 
 MainTitleFont = cti.CTkFont(family="Planet Kosmos", size=60, underline=True)
 StartFont = cti.CTkFont(family="Arial Black", weight="bold", size=40)
@@ -19,7 +20,8 @@ comFont = cti.CTkFont(family="Arial", size=16)
 comFontIta = cti.CTkFont(family="Arial", size=14, slant="italic")
 
 root.title('Calculating of the Fittest')
-root.geometry('1920x1080')
+root.geometry(f'1920x1080+10+10')
+
 
 def hp_confirmsettings():
     #Hunter
@@ -54,8 +56,6 @@ def hp_confirmsettings():
         p_DIS_Tipp.configure(text="(empfohlen: 5-15)", font=comFontIta, text_color="white")
         Globals.min_repro_range = min(SpawnRange[0], SpawnRange[1])
         Globals.max_repro_range = max(SpawnRange[0], SpawnRange[1])
-        
-    #if p_NRG.get()!='' else Globals.prey_energy
 
     Prep = p_REP.get() if p_REP.get()!='' else Globals.prey_reproduction
     Globals.prey_reproduction = int(Prep)
@@ -110,7 +110,6 @@ def graphupdateSlider(amount):
     r_GRA_Number.configure(text=f'Jede {amount} frames')
 
 def goSimulate():
-    #Hier Muss noch eine Funktion rein, welche das GUI Fenster schliesst
     root.destroy()
     runSimulation()
 

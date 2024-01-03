@@ -1,14 +1,18 @@
 import pygame
 import math
-from utils import *
-from Globals import *
 
+# Der Rotator ist eine Optimierungs-Klasse. Um nicht bei jedem Tier und 
+# jedem Winkel 5 Rays (Sichtstrahlen) in jedem Frame malen zu müssen, 
+# werden sie in dieser Klasse vorbereitet und können danach aus arrays 
+# ausgelesen werden. Das hat der Effekt dass die Simulation ca. 20% 
+# schneller läuft.
 class  Rotator:
     hunter_rays = []
     hunter_masks = []
     prey_rays = []
     prey_masks = []
 
+    #360 Rays werden generiert, einer für jedes Grad Neigung
     def create_rays(surface, hunter_view_range, prey_view_range):
         hunter_rect_size = 2 * hunter_view_range
         Rotator.hunter_image = pygame.Surface([hunter_rect_size, hunter_rect_size])
@@ -49,6 +53,7 @@ class  Rotator:
             Rotator.prey_rays.append(prey_ray)
             Rotator.prey_masks.append(prey_mask)
 
+    # Mit dieser Funktion kann ein Tier seine Rays "holen"
     def get_image(animal):
         image = None
         if (animal == "hunter"):
@@ -57,6 +62,7 @@ class  Rotator:
             image = Rotator.prey_image
         return image
 
+    # Mit dieser Funktion kann ein Tier seine Ray-Masken "holen"
     def get_mask(animal, deg_angle) -> pygame.Mask:
         index = int(deg_angle) % 360
         if (index < 0):

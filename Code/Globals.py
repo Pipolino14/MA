@@ -6,15 +6,14 @@ pygame.display.init()
 BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
 #WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIDTH, HEIGHT = 1400, 1400
-#flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.HIDDEN
-flags = pygame.HWSURFACE | pygame.DOUBLEBUF
-#pygame.display.gl_set_attribute(GL_ACCELERATED_VISUAL, 1)
-SCRN = pygame.display.set_mode((WIDTH, HEIGHT), flags)
-WIN = pygame.surface.Surface((WIDTH, HEIGHT), flags)
+SCRN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.HIDDEN)
+WIN = pygame.surface.Surface((WIDTH, HEIGHT))
+BG_IMG.convert_alpha()
 
-BG_IMG = BG_IMG.convert()
 pygame.display.set_caption("Calculating of the fittest")
 
+# Globale Eigenschaften die überall im Programm benutzt werden. 
+# Können manuell oder von der GUI überschrieben werden.
 class Globals:
     #Frames Per Second Limiter
     FPS = 30
@@ -24,7 +23,7 @@ class Globals:
     HUNTER_ROV = 300
     PREY_ROV = 200
     #Field of View
-    HUNTER_FOV = 50
+    HUNTER_FOV = 45
     PREY_FOV = 270
 
     #-----------------------------------------------Amount-Preys-Hunters-----------------------------------------------
@@ -32,11 +31,13 @@ class Globals:
     numPreys = 250
     #------------------------------------------------------------------------------------------------------------------
     #Maximaler Winkel, in welchem sie die Tiere in einem Frame drehen können.
-    angle_factor = 15
+    angle_factor = 10
     #Anzahl Neuronen in der Hidden Layer.
     hiddenN = 2
-    #Maximale Mutations addierung/subtrahierung
-    
+    #Mutations Wahrscheinlichkeit 
+    MutProbability = 0.2
+    #Mutationsstärke
+    MutStrength = 0.1
     #Energie von den hunters und preys nach start oder nach hunters recharge
     hunter_energy = 900
     prey_energy = 400
@@ -52,12 +53,12 @@ class Globals:
     #Grösse der Tiere. Je kleiner, desto mehr "Platz" haben sie...
     animal_size = 0.3
     #Wie oft die graph updated wird in Anzahl frames:
-    graph_rate = 30
-    #Zeigt die Vision rays der Tiere
+    graph_rate = 10
+    #Zeigt die Vision rays der Tiere an
     show_ray = False
-    #Zeigt die Tiere die jedes Tier gerade sieht
+    #Zeigt an, welche Tiere jedes Tier gerade sieht
     show_target = True
-    #Setzt fest, ob die Daten einer Simulation gespeichert werden sollen oder nicht
+    #Setzt fest, ob die Daten nach einer Simulation gespeichert werden sollen oder nicht
     store_data = True
     #Länge der "Vision ray" (Zeigt die Richtung wo das Tier "schaut")
     vision_ray = 20

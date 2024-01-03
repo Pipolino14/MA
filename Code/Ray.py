@@ -1,14 +1,12 @@
-from typing import Any
 import pygame
 import math
-from utils import *
+
 from Rotator import *
 from Globals import *
-from functools import cache
 
-# Diese Klasse generiert einen einzelnen Sichstrahl, der Collisionen mit einer bestimmte 
+# Diese Klasse generiert einen einzelnen Sichstrahl, der Kollisionen mit einer bestimmte 
 # Gruppe detektiert und die Distanz zwischen das Tier wo diesen Strahl "besitzt" (Wirt-Tier)
-# und ein Tier der gesehene Gruppe an eine callback Funktion zurückgibt
+# und ein Tier der gesehene Gruppe zurückgibt
 class Ray(pygame.sprite.Sprite):
     def __init__(self, animal, surface, view_range, angle_offset):
         pygame.sprite.Sprite.__init__(self)
@@ -16,15 +14,14 @@ class Ray(pygame.sprite.Sprite):
         self.surface = surface
         self.angle_offset = angle_offset
         self.view_range = view_range
-        #self.rect_size = 2 * view_range
-        self.image = Rotator.get_image(animal)#self.image = pygame.Surface([self.rect_size, self.rect_size])
+        self.image = Rotator.get_image(animal)
         self.image.set_colorkey((255, 0, 0))  # Rot ist als Transparente Farbe gesetzt
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.distance = 0
 
-    # Checkt ob man ein Tier in einer Gruppe sieht (Hunter oder Prey) und gibt die 
-    # Distanz weiter an eine Callback Funktion
+    # Checkt ob man ein Tier in einer Gruppe sieht (Hunter oder Prey) und aktualisiert die 
+    # Distanz zu dem Tier
     def checkSeeAnimal(self, own_pos, animal_Group):
         if pygame.sprite.spritecollide(self, animal_Group, False, None):
             spriteGroup = pygame.sprite.spritecollide(
@@ -34,6 +31,7 @@ class Ray(pygame.sprite.Sprite):
                 other_pos = (spriteGroup[0].x, spriteGroup[0].y)
                 dist = math.dist(own_pos, other_pos)
                 if dist <= self.view_range:
+                    #Hier werden die gesehene Tiere angezeigt
                     if Globals.show_target:
                         see_Color = (0, 0, 255)
                         if (self.animal == "prey"):
@@ -51,7 +49,7 @@ class Ray(pygame.sprite.Sprite):
     #Update funktion. Definiert die Maske immer wieder je nach Position und Winkel des "Wirt-Tieres" 
     def update(self, pos, angle, animal_group):
         self.image.fill((255, 0, 0))  # Mit rot ausfüllen, rot ist für rays Transparent
-        #Das hier ist um die vision Rays anzuzeigen.
+        #Das ist um die vision Rays anzuzeigen.
         if Globals.show_ray:
             radians = math.radians(angle + self.angle_offset)
             self.yy = math.cos(radians) * self.view_range

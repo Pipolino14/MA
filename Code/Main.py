@@ -4,20 +4,17 @@ import matplotlib.pyplot as mpl
 import pandas as pd
 import datetime
 import json
-import sys
 import time
-from functools import cache
-from Rotator import *
 
-from matplotlib.animation import FuncAnimation
-
-from utils import *
-#from Animal import *
 from Hunter import *
 from Prey import *
 from NetworkBuilder import *
 from Globals import *
 
+# Das ist das Hauptmodul und ist deswegen nicht in einer Klasse verpackt. 
+# Es enthält der Loop der die ganze Simulation ausführt.
+
+# Generiert die erste Tiere und deren "seh-rays" mit Hilfe von der Rotator-Klasse.
 def spawn_animals(GameHunter, GamePrey):
     Rotator.create_rays(WIN, Globals.HUNTER_ROV, Globals.PREY_ROV)
     for counter in range(Globals.numHunters):
@@ -26,41 +23,54 @@ def spawn_animals(GameHunter, GamePrey):
     for counter in range(Globals.numPreys):
         GamePrey.add(PreyAnimal(WIN))
 
+# Checkt ob die Gruppe von "hungrige Jäger" mit Beute kollidiert sind, heisst: gejagt haben
 def check_collide(HungryGameHunter, GamePrey, hunterRepro):
+    #Doppelter check mit und ohne Mask ist nötig, um die Performance zu erhöhen
     if pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, False, None):
         spriteGroup = pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
         for hunter in spriteGroup.keys():
             hunter.recharge()
             hunter.fitness = hunter.fitness + 1
             hunter.no_hunt = Globals.no_hunt_period
-            HungryGameHunter.remove(hunter)
+            HungryGameHunter.remove(hunter) #Hunter hat gejagt: ist also nicht mehr "hungrig"
+
+            #Darf sich der Jäger reproduzieren?
             if hunter.fitness >= Globals.hunter_repro_fitness:
                 hunter.fitness = 0
                 newhunter = hunter.deepcopy()
+                #Jäger wird dupliziert und in einen "reproduktion-Pool" reingeworfen
                 hunterRepro.add(newhunter)
 
+# Checkt ob der "reproduktion-Pool" von Jäger und Beute genug Elemente hat (mind. 2) 
+# und löst eine Rekombination aus
 def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
     myNetworkBuilder = NetworkBuilder(0, 0)
     Hlist = hunterRepro.sprites()
     Plist = preyRepro.sprites()
     while len(Hlist) >= 2:
+        #Die ersten zwei Jäger von der Liste werden selektiert...
         N1weights = Hlist[0].Network.weights
         N2weights = Hlist[1].Network.weights
         N1biases = Hlist[0].Network.biases
         N2biases = Hlist[1].Network.biases
+        #Die Werte gehen durch einen Crossover-Prozess...
         N1weights, N2weights = myNetworkBuilder.crossoverWeights(N1weights, N2weights)
         N1biases, N2biases = myNetworkBuilder.crossoverBiases(N1biases, N2biases)
         Hlist[0].Network.weights = N1weights
         Hlist[0].Network.biases = N1biases
         Hlist[1].Network.weights = N2weights
         Hlist[1].Network.biases = N2biases
+        #Zusätzlich wird eine kleine random-Mutation durchgeführt
         Hlist[0].Network = myNetworkBuilder.mutateNetwork(Hlist[0].Network)
         Hlist[1].Network = myNetworkBuilder.mutateNetwork(Hlist[1].Network)
+        #Die zwei Tiere werden zu den Jäger-Gruppe addiert
         GameHunter.add(Hlist[0])
         GameHunter.add(Hlist[1])
+        #Die zwei Tiere werden vom Reproduktion-Pool gelöscht
         Hlist.pop(0)
         Hlist.pop(0)
 
+    #Die gleiche Prozedur, nun aber mit der Beute...
     while len(Plist) >= 2:
         N1weights = Plist[0].Network.weights
         N2weights = Plist[1].Network.weights
@@ -79,11 +89,11 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
         Plist.pop(0)
         Plist.pop(0)
 
-#Graph Funktion:
+#Graph Funktion.
 def animate(Hpop, Ppop, Gpop, CurrentTime):
     mpl.cla()
     mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop, CurrentTime, Gpop)
-    mpl.legend(["Hunters","Preys","Tiere"])
+    mpl.legend(["Räuber","Beute","Gesamt"])
     mpl.xlabel('Zeit in Sekunden')
     mpl.ylabel('Anzahl Tiere')
     mpl.title('Populationsgrössen')
@@ -93,15 +103,14 @@ def animate(Hpop, Ppop, Gpop, CurrentTime):
 
 
 #Info-Funktionen: Schreiben FPS und infos auf der Screen für debuggen
-
 def draw_fps(clock):
-    font = ft.SysFont('Verdana', 20)
-    fps = f'{clock.get_fps() :.2f}FPS'
-    font.render_to(WIN, (0, 0), text=fps, fgcolor='red', bgcolor='black')
+    font = ft.SysFont('Consolas', 20)
+    fps = f'FPS: {clock.get_fps() :.2f}'
+    font.render_to(WIN, (0, 17), text=fps, fgcolor='red', bgcolor='black')
 
 def draw_info(text):
-    font = ft.SysFont('Verdana', 20)
-    font.render_to(WIN, (0, 100), text=text, fgcolor='green', bgcolor='black')
+    font = ft.SysFont('Consolas', 20)
+    font.render_to(WIN, (0, 0), text=text, fgcolor='green', bgcolor='black')
 
 #Data-Speicherfunktion. Speichert alle relevante Daten einer Simulation
 def storeData(plot_ticks, plot_hunter, plot_prey):
@@ -136,59 +145,56 @@ def storeData(plot_ticks, plot_hunter, plot_prey):
         with open(configname, "w") as outfile:
             outfile.write(json_object)
 
-
-#-----------------------------------------------GAMELOOP-----------------------------------------------
+#Simulation ausführen
 def runSimulation():
-    # Initialisierung
-    #pygame.init()
-
     start = time.time()
 
     run = True
     clock = pygame.time.Clock()
-    #imgRect = pygame.Rect(0,0,WIDTH,HEIGHT)
-
-    #debug for globals
-    # print(Globals.numHunters)
-    # print(Globals.numPreys)
-    # print(Globals.animal_size)
-
-    print(pygame.display.Info())
-    print(pygame.display.get_driver())
 
     framecount = 0
     
-    GameHunter = pygame.sprite.Group()
-    GamePrey = pygame.sprite.Group()
-    HungryGameHunter = pygame.sprite.Group()
-    hunterRepro = pygame.sprite.Group()
-    preyRepro = pygame.sprite.Group()
+    GameHunter = pygame.sprite.Group()       #Jägertiere die auf dem Simulationsfeld sichtbar sind
+    GamePrey = pygame.sprite.Group()         #Beutetiere die auf dem Simulationsfeld sichtbar sind
+    HungryGameHunter = pygame.sprite.Group() #Jagende Tiere
+    hunterRepro = pygame.sprite.Group()      #reproduktion-Pool für Jäger
+    preyRepro = pygame.sprite.Group()        #reproduktion-Pool für Beute
+
+    #Arrays für den Graph
     plot_ticks = []
     plot_hunter = []
     plot_prey = []
     plot_general = []
     
     spawn_animals(GameHunter, GamePrey)
-    walker = HunterAnimal(WIN)
+    walker = HunterAnimal(WIN)         #Steuerbarer Jägertier für debugging
     walker.Network.empty_Network()
     
+    #lässt das Fenster in welches Pygame läuft erscheinen
+    pygame.display.set_mode((WIDTH, HEIGHT), pygame.SHOWN)
+    
+    #-----------------------------------------------GAMELOOP-----------------------------------------------
+
     while run:
         clock.tick(Globals.FPS)
-        #WIN.blit(BG_IMG,(0, 0))
+        
         WIN.fill((0, 150, 0))
-        draw_fps(clock)
 
         GamePrey.update(GameHunter)
         GamePrey.draw(WIN)
         GameHunter.update(GamePrey)
         GameHunter.draw(WIN)
 
+        #Hungrige jäger aktualisieren
         for hungry in GameHunter:
             if hungry.no_hunt == 0:
                 HungryGameHunter.add(hungry)
 
+        #Kollisionen zwischen den Hunters und der Prey detektieren
         check_collide(HungryGameHunter, GamePrey, hunterRepro)
 
+        #Reproduktion von Beutetiere: Nach eine gewisse Fitness 
+        # (Anzahl Frames die sie überlebt haben)
         for prey in GamePrey:
             prey.fitness += 1
             if prey.fitness >= Globals.prey_reproduction:
@@ -212,6 +218,7 @@ def runSimulation():
 
         check_repro(hunterRepro, preyRepro, GameHunter, GamePrey)
 
+        #Graph-Berechnungen
         hunter_pop = len(GameHunter.sprites())
         prey_pop = len(GamePrey.sprites())
         general_pop = hunter_pop + prey_pop
@@ -220,6 +227,7 @@ def runSimulation():
         plot_prey.append(prey_pop)
         plot_general.append(general_pop)
 
+        #Graph wird nicht bei jedem Frame aktualisiert (optimierung)
         framecount += 1
         if ((framecount % Globals.graph_rate) == 0):
             framecount = 0
@@ -229,7 +237,7 @@ def runSimulation():
             storeData(plot_ticks, plot_hunter, plot_prey)
             run = False
 
-        
+
         #---------------WALKER---------------
         walker.recharge()
         keys = pygame.key.get_pressed()
@@ -249,20 +257,25 @@ def runSimulation():
         if keys[pygame.K_ESCAPE]:
             event.type == pygame.QUIT
         #------------------------------------
-        
+        draw_fps(clock)
+        pop_info = f"Hunters:{len(GameHunter.sprites())} - Preys: {len(GamePrey.sprites())} - Total: {len(GamePrey.sprites()) + len(GameHunter.sprites())}"
+        draw_info(pop_info)
         SCRN.blit(WIN, (0, 0))
 
         pygame.display.flip()
 
+        #Speichern der Daten nach Ende der Simulation
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 storeData(plot_ticks, plot_hunter, plot_prey)
                 end = time.time()
-                print(end - start)
+                timespan = end - start
+                print(f'This simulation lasted for {timespan} seconds.')
                 run = False
                 break
-    pygame.quit()
-    sys.exit()
 
+    pygame.quit()
+
+#Um die Simulation ohne GUI laufen zu lassen.
 if __name__== "__main__":
     runSimulation()

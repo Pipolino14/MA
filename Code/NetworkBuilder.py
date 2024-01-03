@@ -1,5 +1,7 @@
 import numpy as np
+
 from Network import *
+from Globals import *
 
 class NetworkBuilder:
     def __init__(self, weights, biases):
@@ -11,7 +13,7 @@ class NetworkBuilder:
         biases = [np.random.randn(4), np.random.randn(2)]
         return weights, biases
     
-    def crossoverWeights(N1weights, N2weights):
+    def crossoverWeights(self, N1weights, N2weights):
         # spalte die zwei Weight Layers von den Netzwerken auseinander
         N1weights_1 = N1weights[0]
         N1weights_2 = N1weights[1]
@@ -100,31 +102,30 @@ class NetworkBuilder:
         BiasSize_1 = input_Biases_1.shape
         BiasSize_2 = input_Biases_2.shape
 
-        #Mache random Matrizen, welcher von -0.1 bis 0.1 gehen kann
-        mutWeights_1 = np.random.uniform(low=-0.1, high=0.1, size=WeightSize_1) 
-        mutWeights_2 = np.random.uniform(low=-0.1, high=0.1, size=WeightSize_2)
-        mutBiases_1 = np.random.uniform(low=-0.1, high=0.1, size=BiasSize_1)
-        mutBiases_2 = np.random.uniform(low=-0.1, high=0.1, size=BiasSize_2)
+        # Übernehme die Wahrscheinlichkeit und Stärke einer Mutation von den Globals
+        mutProb = [1 - Globals.MutProbability, Globals.MutProbability]
+        Strength = Globals.MutStrength
 
-        #Hier kreiere ich eine Matrix, welche entweder -1, 0, 1 enthalten kann. Dies mache ich für alle Matrizen.
-        Weights_1_rng = np.random.randint(low=-1, high=2, size=WeightSize_1)
-        Weights_2_rng = np.random.randint(low=-1, high=2, size=WeightSize_2)
-        Biases_1_rng = np.random.randint(low=-1, high=2, size=BiasSize_1)
-        Biases_2_rng = np.random.randint(low=-1, high=2, size=BiasSize_2)
+        # 1.Generiere gleichgrosse Matrizen mit Werten 0 oder 1, wobei die
+        # Wahrscheinlichkeit mutProb die Wahrscheinlichkeit für die Nummern beschreibt
+        Weights_1_rng = np.random.choice((0, 1), p=mutProb, size=WeightSize_1)
+        Weights_2_rng = np.random.choice((0, 1), p=mutProb, size=WeightSize_2)
+        Biases_1_rng = np.random.choice((0, 1), p=mutProb, size=BiasSize_1)
+        Biases_2_rng = np.random.choice((0, 1), p=mutProb, size=BiasSize_2)
 
-        #Da bei der vorherigen immernoch ein grossteil der Nummern geändert werden, kreiere ich hier Matrizen mit nur 1 oder 0 und multipliziere diese mit der vorherigen Matrix.
-        Weights_1_rng = Weights_1_rng * np.random.randint(2, size=WeightSize_1)
-        Weights_2_rng = Weights_2_rng * np.random.randint(2, size=WeightSize_2)
-        Biases_1_rng = Biases_1_rng * np.random.randint(2, size=BiasSize_1)
-        Biases_2_rng = Biases_2_rng * np.random.randint(2, size=BiasSize_2)
+        # 2.Generiere neue gleichgrosse Matrizen mit zufälligen Werten zwischen -0.1 und 0.1
+        mutWeights_1 = np.random.uniform(low=-Strength, high=Strength, size=WeightSize_1) 
+        mutWeights_2 = np.random.uniform(low=-Strength, high=Strength, size=WeightSize_2)
+        mutBiases_1 = np.random.uniform(low=-Strength, high=Strength, size=BiasSize_1)
+        mutBiases_2 = np.random.uniform(low=-Strength, high=Strength, size=BiasSize_2)
 
-        #Jetzt multipliziere ich die rng matrizen mit den random Matrizen, dass nun nur in spezifischen orten ein wechsel stattgefunden hat und dieser nur leicht Positiv, sowie auch nur leicht negativ sein kann.
+        # 3.Multipliziere die beiden vorherigen Matrizen miteinander
         selWeights1 = mutWeights_1 * Weights_1_rng
         selWeights2 = mutWeights_2 * Weights_2_rng
         selBiases1 = mutBiases_1 * Biases_1_rng
         selBiases2 = mutBiases_2 * Biases_2_rng
         
-        #Jetzt adiere ich diese leiche Änderungen zur inputMatrix und returne diese danach. 
+        # 4.Addiere diese neuen Matrizen zu den weights und biases des input-Netzwerks
         newweights = [np.add(input_Weights_1 , selWeights1) , np.add(input_Weights_2 , selWeights2)]
         newbiases = [np.add(input_Biases_1, selBiases1) , np.add(input_Biases_2, selBiases2)]
 
