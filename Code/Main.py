@@ -27,7 +27,8 @@ def spawn_animals(GameHunter, GamePrey):
 def check_collide(HungryGameHunter, GamePrey, hunterRepro):
     #Doppelter check mit und ohne Mask ist nötig, um die Performance zu erhöhen
     if pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, False, None):
-        spriteGroup = pygame.sprite.groupcollide(HungryGameHunter, GamePrey, False, True, pygame.sprite.collide_mask)
+        spriteGroup = pygame.sprite.groupcollide(HungryGameHunter, GamePrey,
+                                                 False, True, pygame.sprite.collide_mask)
         for hunter in spriteGroup.keys():
             hunter.recharge()
             hunter.fitness = hunter.fitness + 1
@@ -167,8 +168,12 @@ def runSimulation():
     plot_general = []
     
     spawn_animals(GameHunter, GamePrey)
-    walker = HunterAnimal(WIN)         #Steuerbarer Jägertier für debugging
+    walker = HunterAnimal(WIN)          #Steuerbares Jägertier für debugging
     walker.Network.empty_Network()
+    walker.angle = 270
+    hider = PreyAnimal(WIN)             #Steuerbares Beutetier für debugging
+    hider.Network.empty_Network()
+    hider.angle = 270
     
     #lässt das Fenster in welches Pygame läuft erscheinen
     pygame.display.set_mode((WIDTH, HEIGHT), pygame.SHOWN)
@@ -233,18 +238,26 @@ def runSimulation():
             framecount = 0
             animate(plot_hunter, plot_prey, plot_general, plot_ticks)
         
-        if ((hunter_pop == 0) or (prey_pop == 0)):
-            storeData(plot_ticks, plot_hunter, plot_prey)
-            run = False
+        # if ((hunter_pop == 0) or (prey_pop == 0)):
+        #     storeData(plot_ticks, plot_hunter, plot_prey)
+        #     run = False
 
 
-        #---------------WALKER---------------
+        #---------------WALKER&HIDER---------------
         walker.recharge()
+        hider.recharge()
+        hider.fitness = 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_1]:
             walker.x = 300
+            walker.y = 300
             walker.vel = 0
             GameHunter.add(walker)
+        if keys[pygame.K_2]:
+            hider.x = 600
+            hider.y = 600
+            hider.vel = 0
+            GamePrey.add(hider)
         
         if keys[pygame.K_a]:
             walker.rotate(turn_right=False, turn_angle=0.5)
@@ -254,9 +267,25 @@ def runSimulation():
             walker.increase_speed(0.3)
         if keys[pygame.K_s]:
             walker.reduce_speed(0.3)
+        
+        if keys[pygame.K_LEFT]:
+            hider.rotate(turn_right=False, turn_angle=0.5)
+        if keys[pygame.K_RIGHT]:
+            hider.rotate(turn_right=True, turn_angle=0.5)
+        if keys[pygame.K_UP]:
+            hider.increase_speed(0.3)
+        if keys[pygame.K_DOWN]:
+            hider.reduce_speed(0.3) 
+        #------------------------------------------
+
         if keys[pygame.K_ESCAPE]:
-            event.type == pygame.QUIT
-        #------------------------------------
+            storeData(plot_ticks, plot_hunter, plot_prey)
+            end = time.time()
+            timespan = end - start
+            print(f'This simulation lasted for {timespan} seconds.')
+            run = False
+            break
+        
         draw_fps(clock)
         pop_info = f"Hunters:{len(GameHunter.sprites())} - Preys: {len(GamePrey.sprites())} - Total: {len(GamePrey.sprites()) + len(GameHunter.sprites())}"
         draw_info(pop_info)
@@ -273,6 +302,7 @@ def runSimulation():
                 print(f'This simulation lasted for {timespan} seconds.')
                 run = False
                 break
+
 
     pygame.quit()
 

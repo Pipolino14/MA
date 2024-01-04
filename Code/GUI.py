@@ -109,6 +109,18 @@ def graphupdateSlider(amount):
     Globals.graph_rate = amount
     r_GRA_Number.configure(text=f'Jede {amount} frames')
 
+def numberneuronSlider(Neurons):
+    Globals.hiddenN = int(Neurons)
+    n_NNE_Number.configure(text=f'Anz.: {Neurons}')
+
+def MutstrengthSlider(Strength):
+    Globals.MutStrength = (Strength/100)
+    n_MUT_STR_Number.configure(text=f'Stärke: {Strength}%')
+
+def MutprobabilitySlider(Probability):
+    Globals.MutProbability = (Probability/100)
+    n_MUT_PRB_Number.configure(text=f'Wahrscheinlichkeit: {Probability}%')
+
 def goSimulate():
     root.destroy()
     runSimulation()
@@ -142,7 +154,7 @@ g_settings_label = cti.CTkLabel(GTab, text="General Settings", font=TitleFont)
 g_settings_label.grid(row=0, column=0, columnspan=2, padx=20, pady=20)
 
 g_amount_label = cti.CTkLabel(GTab, text="Anzahl Tiere", font=subTitleFont)
-g_amount_tipp = cti.CTkLabel(GTab, text="(empfohlen: 1:3 Räuber:Beute)", font=comFontIta)
+g_amount_tipp = cti.CTkLabel(GTab, text="(empfohlen: 1:4 Räuber:Beute)", font=comFontIta)
 g_amount_label.grid(row=1, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_amount_tipp.grid(row=2, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 
@@ -161,7 +173,7 @@ g_hp_Amount_btn = cti.CTkButton(GTab, text="Anzahlen Bestätigen", font=comFont,
 g_hp_Amount_btn.grid(row=5, column=0, columnspan=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 g_A_Size_label = cti.CTkLabel(GTab, text="Grösse der Tiere", font=subTitleFont)
-g_A_Size_tipp = cti.CTkLabel(GTab, text="(max: 64px)(empfohlen: 20-30%", font=comFontIta)
+g_A_Size_tipp = cti.CTkLabel(GTab, text="(max: 64px)(empfohlen: 20-30%)", font=comFontIta)
 g_A_Size = cti.CTkSlider(GTab, from_=0, to=100, number_of_steps=20, command=resizer)
 g_A_Size.set(Globals.animal_size*100)
 g_A_Size_Number = cti.CTkLabel(GTab, text=f'Size: {g_A_Size.get()}%', font=comFont)
@@ -171,7 +183,7 @@ g_A_Size.grid(row=8, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_A_Size_Number.grid(row=9, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 
 g_MAX_Turn_label = cti.CTkLabel(GTab, text="Maximaler Drehwinkel in einem Frame", font=subTitleFont)
-g_MAX_Turn_tipp = cti.CTkLabel(GTab, text="(empfohlen: NOCH HERAUSFINDEN)", font=comFontIta)
+g_MAX_Turn_tipp = cti.CTkLabel(GTab, text="(empfohlen: 10°-20°)", font=comFontIta)
 g_MAX_Turn = cti.CTkSlider(GTab, from_=0, to=50, number_of_steps=10, command=turnAngleSlider)
 g_MAX_Turn.set(Globals.angle_factor)
 g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Size: {g_MAX_Turn.get()}°', font=comFont)
@@ -314,27 +326,59 @@ RTab.pack(side="top", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
 RTab.columnconfigure(0, weight=1)
 
 r_settings_label = cti.CTkLabel(RTab, text="Simulations Einstellungen", font=TitleFont)
-r_settings_label.grid(row=0, column=0, padx=20, pady=20)
+r_settings_label.grid(row=0, column=0, padx=5, pady=5)
 
 r_FPS_label = cti.CTkLabel(RTab, text="Frames per seconds Limit", font=subTitleFont)
 r_FPS_tipp = cti.CTkLabel(RTab, text="(Simulation wird meist unter 5 FPS laufen)", font=comFontIta)
 r_FPS = cti.CTkSlider(RTab, from_=5, to=60, number_of_steps=55, command=FPSslider)
 r_FPS.set(Globals.FPS)
 r_FPS_Number = cti.CTkLabel(RTab, text=f'Max: {r_FPS.get()}fps', font=comFont)
-r_FPS_label.grid(row=1, column=0, padx=pad_x, pady=pad_y)
-r_FPS_tipp.grid(row=2, column=0, padx=pad_x, pady=pad_y)
-r_FPS.grid(row=3, column=0, padx=pad_x, pady=pad_y)
-r_FPS_Number.grid(row=4, column=0, padx=pad_x, pady=pad_y)
+r_FPS_label.grid(row=1, column=0, padx=pad_x, pady=pad_y/2)
+r_FPS_tipp.grid(row=2, column=0, padx=pad_x, pady=pad_y/2)
+r_FPS.grid(row=3, column=0, padx=pad_x, pady=pad_y/2)
+r_FPS_Number.grid(row=4, column=0, padx=pad_x, pady=pad_y/2)
 
 r_GRA_label = cti.CTkLabel(RTab, text="Graph update in frames", font=subTitleFont)
 r_GRA_tipp = cti.CTkLabel(RTab, text="(empfohlen: 30)", font=comFontIta)
 r_GRA = cti.CTkSlider(RTab, from_=10, to=60, number_of_steps=5, command=graphupdateSlider)
 r_GRA.set(Globals.graph_rate)
 r_GRA_Number = cti.CTkLabel(RTab, text=f'Jede {r_GRA.get()} frames', font=comFont)
-r_GRA_label.grid(row=5, column=0, padx=pad_x, pady=pad_y)
-r_GRA_tipp.grid(row=6, column=0, padx=pad_x, pady=pad_y)
-r_GRA.grid(row=7, column=0, padx=pad_x, pady=pad_y)
-r_GRA_Number.grid(row=8, column=0, padx=pad_x, pady=pad_y)
+r_GRA_label.grid(row=5, column=0, padx=pad_x, pady=pad_y/2)
+r_GRA_tipp.grid(row=6, column=0, padx=pad_x, pady=pad_y/2)
+r_GRA.grid(row=7, column=0, padx=pad_x, pady=pad_y/2)
+r_GRA_Number.grid(row=8, column=0, padx=pad_x, pady=pad_y/2)
+
+NTab = cti.CTkFrame(Bottom_Right_frame, fg_color="#163432")
+NTab.pack(side="top", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
+NTab.columnconfigure(0, weight=1)
+
+n_settings_label = cti.CTkLabel(NTab, text="Netzwerk Einstellungen", font=TitleFont)
+n_settings_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
+
+n_NNE_label = cti.CTkLabel(NTab, text="Anzahl Neuronen", font=subTitleFont)
+n_NNE_tipp = cti.CTkLabel(NTab, text="(empfohlen: 2)", font=comFontIta)
+n_NNE = cti.CTkSlider(NTab, from_=2, to=10, number_of_steps=8, command=numberneuronSlider)
+n_NNE.set(Globals.hiddenN)
+n_NNE_Number = cti.CTkLabel(NTab, text=f'Anz.: {n_NNE.get()}', font=comFont)
+n_NNE_label.grid(row=9, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+n_NNE_tipp.grid(row=10, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+n_NNE.grid(row=11, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+n_NNE_Number.grid(row=12, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+
+n_MUT_label = cti.CTkLabel(NTab, text="Mutationswahrscheinlichkeit & Stärke", font=subTitleFont)
+n_MUT_tipp = cti.CTkLabel(NTab, text="(empfohlen: 20% & 0.1)", font=comFontIta)
+n_MUT_STR = cti.CTkSlider(NTab, from_=0, to=100, number_of_steps=20, command=MutstrengthSlider)
+n_MUT_STR.set((Globals.MutStrength*100))
+n_MUT_STR_Number = cti.CTkLabel(NTab, text=f'Stärke: {n_MUT_STR.get()}%', font=comFont)
+n_MUT_PRB = cti.CTkSlider(NTab, from_=0, to=100, number_of_steps=20, command=MutprobabilitySlider)
+n_MUT_PRB.set((Globals.MutProbability*100))
+n_MUT_PRB_Number = cti.CTkLabel(NTab, text=f'Wahrscheinlichkeit{n_MUT_PRB.get()}%', font=comFont)
+n_MUT_label.grid(row=13, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+n_MUT_tipp.grid(row=14, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+n_MUT_STR.grid(row=15, column=1, padx=pad_x, pady=pad_y/2)
+n_MUT_STR_Number.grid(row=16, column=1, padx=pad_x, pady=pad_y/2)
+n_MUT_PRB.grid(row=15, column=0, padx=pad_x, pady=pad_y/2)
+n_MUT_PRB_Number.grid(row=16, column=0, padx=pad_x, pady=pad_y/2)
 
 #-----------------------------------------START-FRAME------------------------------------------
 StartTab = cti.CTkFrame(Bottom_Right_frame, fg_color="#bf564e", height=100)

@@ -29,7 +29,7 @@ class HunterAnimal(Animal):
     def hunt(self):
         if max(self.distances)> 0:
             
-            # führt die forward Funktion im Neuralen Netzwerk aus, sobald die Rays etwas sehen.
+            # führt die forward Funktion im Neuralem Netzwerk aus, sobald die Rays etwas sehen.
             netResult = self.Network.forward(self.distances)
             
             #Änderung des Winkels (abhängig vom ersten output vom Netzwerk)

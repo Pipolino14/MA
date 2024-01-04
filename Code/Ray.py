@@ -54,7 +54,10 @@ class Ray(pygame.sprite.Sprite):
             radians = math.radians(angle + self.angle_offset)
             self.yy = math.cos(radians) * self.view_range
             self.xx = math.sin(radians) * self.view_range
-            pygame.draw.line(self.surface, (150, 150, 150, 0), pos, (pos[0] - self.xx, pos[1] - self.yy),1)
+            ray_Color = (57, 255, 20)
+            if (self.animal == "prey"):
+                ray_Color = (218, 20, 255)
+            pygame.draw.line(self.surface, ray_Color, pos, (pos[0] - self.xx, pos[1] - self.yy),1)
 
         #Nun die Maske laden, um dort Kollisionen zu sehen
         self.mask = Rotator.get_mask(self.animal, angle + self.angle_offset)

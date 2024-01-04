@@ -1,12 +1,13 @@
 import pygame
 import math
 import random
+
 from utils import *
 from Ray import *
 from Network import *
 from Globals import *
 
-MatrixLimit = 0
+MatrixLimit = 0.1
 
 # Animal Basis-Klasse. Enthält alle Eigenschaften und Funktionen 
 # die Jäger und Beute gemeinsam haben.
@@ -25,7 +26,7 @@ class Animal(pygame.sprite.Sprite):
         self.vel = random.randint(0, 3)
         self.angle = random.randint(0, 360)  # Richtung wo das Tier "schaut"
 
-        #Position wird randomisiert, wenn nicht angegeben.
+        #Position wird zufällig gewählt, wenn nicht angegeben.
         if posX == None:
             posX = random.randint(0, WIDTH)
         if posY == None:
