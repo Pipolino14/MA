@@ -44,7 +44,7 @@ class Animal(pygame.sprite.Sprite):
                        np.random.uniform(-MatrixLimit, MatrixLimit, size=(1, 2))]
         self.Network = Network(self.weights, self.biases)
 
-        # Die 5 "Rays" sind die "sicht-Strahlen" des Tiers
+        #Die 5 "Rays" sind die "sicht-Strahlen" des Tiers
         self.rayGroup = pygame.sprite.Group()
         for ray in range(rays):
             rayAngle = ray * (FOV / rays) - round(FOV / 2, 0) + ((FOV / rays) / 2)

@@ -90,7 +90,7 @@ def check_repro(hunterRepro, preyRepro, GameHunter, GamePrey):
         Plist.pop(0)
         Plist.pop(0)
 
-#Graph Funktion.
+# Graph Funktion.
 def animate(Hpop, Ppop, Gpop, CurrentTime):
     mpl.cla()
     mpl.plot(CurrentTime, Hpop, CurrentTime, Ppop, CurrentTime, Gpop)
@@ -103,7 +103,7 @@ def animate(Hpop, Ppop, Gpop, CurrentTime):
     mpl.pause(0.001)
 
 
-#Info-Funktionen: Schreiben FPS und infos auf der Screen für debuggen
+# Info-Funktionen: Schreiben FPS und infos auf der Screen für debuggen
 def draw_fps(clock):
     font = ft.SysFont('Consolas', 20)
     fps = f'FPS: {clock.get_fps() :.2f}'
@@ -113,7 +113,7 @@ def draw_info(text):
     font = ft.SysFont('Consolas', 20)
     font.render_to(WIN, (0, 0), text=text, fgcolor='green', bgcolor='black')
 
-#Data-Speicherfunktion. Speichert alle relevante Daten einer Simulation
+# Data-Speicherfunktion. Speichert alle relevante Daten einer Simulation
 def storeData(plot_ticks, plot_hunter, plot_prey):
     if Globals.store_data:
         excelData = {"Zeit":plot_ticks, "Anz. Jäger": plot_hunter, "Anz. Beute": plot_prey}
@@ -131,7 +131,10 @@ def storeData(plot_ticks, plot_hunter, plot_prey):
                       "Min Prey repro dis":Globals.min_repro_range,
                       "Max Prey repro dis":Globals.max_repro_range,
                       "Angle_factor":Globals.angle_factor,
-                      "Animal Size":Globals.animal_size
+                      "Animal Size":Globals.animal_size,
+                      "Number of hidden neurons":Globals.hiddenN,
+                      "Mutation probability":Globals.MutProbability,
+                      "Mutation strength":Globals.MutStrength
                       }
 
         dc = pd.DataFrame(configData, index=[0])
@@ -146,7 +149,7 @@ def storeData(plot_ticks, plot_hunter, plot_prey):
         with open(configname, "w") as outfile:
             outfile.write(json_object)
 
-#Simulation ausführen
+# Simulation ausführen
 def runSimulation():
     start = time.time()
 
@@ -175,8 +178,12 @@ def runSimulation():
     hider.Network.empty_Network()
     hider.angle = 270
     
-    #lässt das Fenster in welches Pygame läuft erscheinen
-    pygame.display.set_mode((WIDTH, HEIGHT), pygame.SHOWN)
+    #lässt das Fenster in welches Pygame läuft erscheinen und falls Globale FULL True ist, läuft es in Fullscreen
+    if Globals.FULL == True:
+        modes = pygame.SHOWN | pygame.FULLSCREEN | pygame.SCALED
+    else:
+        modes = pygame.SHOWN
+    pygame.display.set_mode((WIDTH, HEIGHT), flags=modes)
     
     #-----------------------------------------------GAMELOOP-----------------------------------------------
 
@@ -199,7 +206,7 @@ def runSimulation():
         check_collide(HungryGameHunter, GamePrey, hunterRepro)
 
         #Reproduktion von Beutetiere: Nach eine gewisse Fitness 
-        # (Anzahl Frames die sie überlebt haben)
+        #(Anzahl Frames die sie überlebt haben)
         for prey in GamePrey:
             prey.fitness += 1
             if prey.fitness >= Globals.prey_reproduction:
@@ -236,11 +243,11 @@ def runSimulation():
         framecount += 1
         if ((framecount % Globals.graph_rate) == 0):
             framecount = 0
-            animate(plot_hunter, plot_prey, plot_general, plot_ticks)
+            #animate(plot_hunter, plot_prey, plot_general, plot_ticks)
         
-        # if ((hunter_pop == 0) or (prey_pop == 0)):
-        #     storeData(plot_ticks, plot_hunter, plot_prey)
-        #     run = False
+        if ((hunter_pop == 0) or (prey_pop == 0)):
+            storeData(plot_ticks, plot_hunter, plot_prey)
+            run = False
 
 
         #---------------WALKER&HIDER---------------
@@ -306,6 +313,6 @@ def runSimulation():
 
     pygame.quit()
 
-#Um die Simulation ohne GUI laufen zu lassen.
+# Um die Simulation ohne GUI laufen zu lassen.
 if __name__== "__main__":
     runSimulation()

@@ -12,7 +12,7 @@ class  Rotator:
     prey_rays = []
     prey_masks = []
 
-    #360 Rays werden generiert, einer für jedes Grad Neigung
+    # 360 Rays werden generiert, einer für jedes Grad Neigung
     def create_rays(surface, hunter_view_range, prey_view_range):
         hunter_rect_size = 2 * hunter_view_range
         Rotator.hunter_image = pygame.Surface([hunter_rect_size, hunter_rect_size])

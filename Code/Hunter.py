@@ -4,7 +4,7 @@ from Globals import *
 # Jäger-Tier. Child-class von Animal mit den Jäger-spezifischen
 # Eigenschaften und Funktionen
 class HunterAnimal(Animal):
-    #Initalisiert die Eigenschaften bei der Instanzierung.
+    # Initalisiert die Eigenschaften bei der Instanzierung.
     def __init__(self, surface, posX = None,posY = None):
         self.fitness = 0
         self.Energy = Globals.hunter_energy
@@ -16,15 +16,15 @@ class HunterAnimal(Animal):
         #Das  Tier sieht niemand im ersten Frame.
         self.distances = [0, 0, 0, 0, 0]
 
-    #Ein Tier kann nicht mit python's "copy" reproduziert werden, da es dort nur 
-    #eine neue Referenz kreiert wird. Darum braucht es einen "deepcopy"
+    # Ein Tier kann nicht mit python's "copy" reproduziert werden, da es dort nur 
+    # eine neue Referenz kreiert wird. Darum braucht es einen "deepcopy"
     def deepcopy(self):
         newhunter = HunterAnimal(self.surface, self.x, self.y)
         newhunter.Network = self.Network
         newhunter.newgen()
         return newhunter
     
-    #Sobald das Tier etwas sieht, beginnt er zu "jagen", heisst: 
+    # Sobald das Tier etwas sieht, beginnt er zu "jagen", heisst: 
     # Die Netzwerk-Outputs haben Einfluss auf sein Verhalten
     def hunt(self):
         if max(self.distances)> 0:

@@ -6,7 +6,7 @@ from Globals import *
 # Beute-Tier. Child-class von Animal mit den Beute-spezifischen
 # Eigenschaften und Funktionen
 class PreyAnimal(Animal):
-    #Initalisiert die Eigenschaften bei der Instanzierung.
+    # Initalisiert die Eigenschaften bei der Instanzierung.
     def __init__(self,surface,posX = None,posY = None):
         self.fitness = random.randint(0, 100)
         self.Energy = Globals.prey_energy
@@ -17,8 +17,8 @@ class PreyAnimal(Animal):
         #Das  Tier sieht niemand im ersten Frame.
         self.distances = [0, 0, 0, 0, 0]
 
-    #Ein Tier kann nicht mit python's "copy" reproduziert werden, da es dort nur 
-    #eine neue Referenz kreiert wird. Darum braucht es einen "deepcopy"
+    # Ein Tier kann nicht mit python's "copy" reproduziert werden, da es dort nur 
+    # eine neue Referenz kreiert wird. Darum braucht es einen "deepcopy"
     def deepcopy(self):
         newprey = PreyAnimal(self.surface, self.x, self.y)
         newprey.Network = self.Network
@@ -30,19 +30,14 @@ class PreyAnimal(Animal):
         if self.vel == 0:
             self.Energy += 0.5
 
-    
-    # def turningGraph(self, x):
-    #     x = (4 * (x - 0.5)**2)**1
-    #     return x
-
-    #Sobald das Tier etwas sieht, beginnt er zu "fliehen", heisst: 
+    # Sobald das Tier etwas sieht, beginnt er zu "fliehen", heisst: 
     # Die Netzwerk-Outputs haben Einfluss auf sein Verhalten
     def avoid(self):
         if max(self.distances)> 0:
-            # macht alle rays sichtbar, falls der hunter etwas sieht
+            #macht alle rays sichtbar, falls der hunter etwas sieht
             self.rayGroup.draw(self.surface)
             
-            # führt die forward Funktion im Neuralen Netzwerk aus, sobald die Rays etwas sehen.
+            #führt die forward Funktion im Neuralen Netzwerk aus, sobald die Rays etwas sehen.
             netResult = self.Network.forward(self.distances)
             
             #Änderung des Winkels, mit dem Wert des Outputs

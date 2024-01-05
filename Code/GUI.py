@@ -12,14 +12,14 @@ cti.set_default_color_theme("dark-blue")
 
 root = cti.CTk()
 
-MainTitleFont = cti.CTkFont(family="Planet Kosmos", size=60, underline=True)
+MainTitleFont = cti.CTkFont(family="Stencil", size=120, underline=True)
 StartFont = cti.CTkFont(family="Arial Black", weight="bold", size=40)
 TitleFont = cti.CTkFont(family="Arial Black", size=30, underline=True)
 subTitleFont = cti.CTkFont(family="Arial Black", size=20)
 comFont = cti.CTkFont(family="Arial", size=16)
 comFontIta = cti.CTkFont(family="Arial", size=14, slant="italic")
 
-root.title('Calculating of the Fittest')
+root.title('Calculation of the Fittest')
 root.geometry(f'1920x1080+10+10')
 
 
@@ -77,11 +77,11 @@ def resizer(index):
 
 def turnAngleSlider(angel):
     Globals.angle_factor = (angel)
-    g_MAX_Turn_Number.configure(text=f'Max: {angel}°')
+    g_MAX_Turn_Number.configure(text=f'Maximal: {angel}°')
 
 def vRaySize(size):
     Globals.vision_ray = size
-    g_Vray_Number.configure(text=f'Size: {size}px')
+    g_Vray_Number.configure(text=f'Länge: {size}px')
 
 def showrayToggle():
     rayShow = g_show_ray.get()
@@ -120,6 +120,15 @@ def MutstrengthSlider(Strength):
 def MutprobabilitySlider(Probability):
     Globals.MutProbability = (Probability/100)
     n_MUT_PRB_Number.configure(text=f'Wahrscheinlichkeit: {Probability}%')
+
+def fullscreenCheck():
+    fullscrn = r_SCN_FULL.get()
+    if fullscrn == 1:
+        Globals.FULL == True
+        print("Full: True")
+    else:
+        Globals.FULL == False
+        print("Full: False")
 
 def goSimulate():
     root.destroy()
@@ -186,7 +195,7 @@ g_MAX_Turn_label = cti.CTkLabel(GTab, text="Maximaler Drehwinkel in einem Frame"
 g_MAX_Turn_tipp = cti.CTkLabel(GTab, text="(empfohlen: 10°-20°)", font=comFontIta)
 g_MAX_Turn = cti.CTkSlider(GTab, from_=0, to=50, number_of_steps=10, command=turnAngleSlider)
 g_MAX_Turn.set(Globals.angle_factor)
-g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Size: {g_MAX_Turn.get()}°', font=comFont)
+g_MAX_Turn_Number = cti.CTkLabel(GTab, text=f'Maximal: {g_MAX_Turn.get()}°', font=comFont)
 g_MAX_Turn_label.grid(row=10, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_MAX_Turn_tipp.grid(row=11, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_MAX_Turn.grid(row=12, column=0, columnspan=2, padx=pad_x, pady=pad_y)
@@ -196,7 +205,7 @@ g_Vray_label = cti.CTkLabel(GTab, text="Länge des Richtungsvektor in Pixel", fo
 g_Vray_tipp = cti.CTkLabel(GTab, text="(empfohlen: 20-40)", font=comFontIta)
 g_Vray = cti.CTkSlider(GTab, from_=0, to=100, number_of_steps=20, command=vRaySize)
 g_Vray.set(Globals.vision_ray)
-g_Vray_Number = cti.CTkLabel(GTab, text=f'Size: {g_A_Size.get()}px', font=comFont)
+g_Vray_Number = cti.CTkLabel(GTab, text=f'Länge: {g_A_Size.get()}px', font=comFont)
 g_Vray_label.grid(row=14, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_Vray_tipp.grid(row=15, column=0, columnspan=2, padx=pad_x, pady=pad_y)
 g_Vray.grid(row=16, column=0, columnspan=2, padx=pad_x, pady=pad_y)
@@ -235,7 +244,7 @@ h_label.grid(row=1, column=0)
 
 #FOV
 h_FOV_label = cti.CTkLabel(ATab, text="Sichtfeld in Grad", font=comFont)
-h_FOV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 35°-65°)", font=comFontIta)
+h_FOV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 40°-60°)", font=comFontIta)
 h_FOV = cti.CTkEntry(ATab, placeholder_text=Globals.HUNTER_FOV)
 h_FOV_label.grid(row=2, column=0, padx=pad_x, pady=pad_y,sticky=tk.W)
 h_FOV_Tipp.grid(row=3, column=0, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -243,7 +252,7 @@ h_FOV.grid(row=4, column=0, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #ROV
 h_ROV_label = cti.CTkLabel(ATab, text="Sichtweite in Pixel", font=comFont)
-h_ROV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 250-400)", font=comFontIta)
+h_ROV_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 300-400)", font=comFontIta)
 h_ROV = cti.CTkEntry(ATab, placeholder_text=Globals.HUNTER_ROV)
 h_ROV_label.grid(row=6, column=0, padx=pad_x, pady=pad_y,sticky=tk.W)
 h_ROV_Tipp.grid(row=7, column=0, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -295,7 +304,7 @@ p_ROV.grid(row=8, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #Energy
 p_NRG_label = cti.CTkLabel(ATab, text="Energie in Frames", font=comFont)
-p_NRG_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 100-300)", font=comFontIta)
+p_NRG_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 200-500)", font=comFontIta)
 p_NRG = cti.CTkEntry(ATab, placeholder_text=Globals.prey_energy)
 p_NRG_label.grid(row=10, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_NRG_Tipp.grid(row=11, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -303,7 +312,7 @@ p_NRG.grid(row=12, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #Distance in child
 p_DIS_label = cti.CTkLabel(ATab, text="Distanz neues Kind", font=comFont)
-p_DIS_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 5-15)", font=comFontIta)
+p_DIS_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 5-15) [bitte zwei Zahlen angeben]", font=comFontIta)
 p_DIS = cti.CTkEntry(ATab, placeholder_text=f"{Globals.min_repro_range},{Globals.max_repro_range}")
 p_DIS_label.grid(row=14, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_DIS_Tipp.grid(row=15, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -311,7 +320,7 @@ p_DIS.grid(row=16, column=2, padx=pad_x, pady=pad_y, sticky=tk.E+tk.W)
 
 #Reproduction
 p_REP_label = cti.CTkLabel(ATab, text="Reproduktion in Anzahl frames", font=comFont)
-p_REP_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 100-200)", font=comFontIta)
+p_REP_Tipp = cti.CTkLabel(ATab, text="(empfohlen: 200-400)", font=comFontIta)
 p_REP = cti.CTkEntry(ATab, placeholder_text=Globals.prey_reproduction)
 p_REP_label.grid(row=18, column=2, padx=pad_x, pady=pad_y,sticky=tk.W)
 p_REP_Tipp.grid(row=19, column=2, padx=pad_x, pady=pad_y, sticky=tk.W)
@@ -326,7 +335,7 @@ RTab.pack(side="top", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
 RTab.columnconfigure(0, weight=1)
 
 r_settings_label = cti.CTkLabel(RTab, text="Simulations Einstellungen", font=TitleFont)
-r_settings_label.grid(row=0, column=0, padx=5, pady=5)
+r_settings_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
 
 r_FPS_label = cti.CTkLabel(RTab, text="Frames per seconds Limit", font=subTitleFont)
 r_FPS_tipp = cti.CTkLabel(RTab, text="(Simulation wird meist unter 5 FPS laufen)", font=comFontIta)
@@ -343,10 +352,16 @@ r_GRA_tipp = cti.CTkLabel(RTab, text="(empfohlen: 30)", font=comFontIta)
 r_GRA = cti.CTkSlider(RTab, from_=10, to=60, number_of_steps=5, command=graphupdateSlider)
 r_GRA.set(Globals.graph_rate)
 r_GRA_Number = cti.CTkLabel(RTab, text=f'Jede {r_GRA.get()} frames', font=comFont)
-r_GRA_label.grid(row=5, column=0, padx=pad_x, pady=pad_y/2)
-r_GRA_tipp.grid(row=6, column=0, padx=pad_x, pady=pad_y/2)
-r_GRA.grid(row=7, column=0, padx=pad_x, pady=pad_y/2)
-r_GRA_Number.grid(row=8, column=0, padx=pad_x, pady=pad_y/2)
+r_GRA_label.grid(row=1, column=1, padx=pad_x, pady=pad_y/2)
+r_GRA_tipp.grid(row=2, column=1, padx=pad_x, pady=pad_y/2)
+r_GRA.grid(row=3, column=1, padx=pad_x, pady=pad_y/2)
+r_GRA_Number.grid(row=4, column=1, padx=pad_x, pady=pad_y/2)
+
+r_SCN_label = cti.CTkLabel(RTab, text="Screen Einstellungen", font=subTitleFont)
+r_SCN_label.grid(row=5, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+r_SCN_FULL = cti.CTkSwitch(RTab, text="Fullscreen", font=subTitleFont, command=fullscreenCheck)
+r_SCN_FULL.grid(row=6, column=0, columnspan=2, padx=pad_x, pady=pad_y/2)
+
 
 NTab = cti.CTkFrame(Bottom_Right_frame, fg_color="#163432")
 NTab.pack(side="top", pady=w_pady, padx=w_padx, fill=TabFill, expand=True)
@@ -391,7 +406,7 @@ run_btn.grid(padx=10, pady=10, sticky=tk.E+tk.W)
 
 #------------------------------------------TITLE-----------------------------------------------
 
-Title_label = cti.CTkLabel(Upper_frame, text="Calculating of the fittest", font=MainTitleFont, image=bg_image)
+Title_label = cti.CTkLabel(Upper_frame, text="Calculation of the fittest", font=MainTitleFont, image=bg_image)
 Title_label.grid()
 
 root.mainloop()

@@ -3,21 +3,20 @@ from utils import *
 
 pygame.init()
 pygame.display.init()
-BG_IMG = scale_image(pygame.image.load("Code/Assets/grass.jpg"), 1)
-#WIDTH, HEIGHT = BG_IMG.get_width(), BG_IMG.get_height()
 WIDTH, HEIGHT = 1400, 1400
 SCRN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.HIDDEN)
 WIN = pygame.surface.Surface((WIDTH, HEIGHT))
-BG_IMG.convert_alpha()
 
-pygame.display.set_caption("Calculating of the fittest")
+pygame.display.set_caption("Calculation of the fittest")
 
 # Globale Eigenschaften die überall im Programm benutzt werden. 
 # Können manuell oder von der GUI überschrieben werden.
 class Globals:
     #Frames Per Second Limiter
     FPS = 30
-    VEL = 5
+
+    #Fullscreen Option
+    FULL = True
 
     #Range of View
     HUNTER_ROV = 300
@@ -47,7 +46,7 @@ class Globals:
     prey_reproduction = 360
     #Wie viele Kills müssen die Hunters haben um sich zu reproduzieren
     hunter_repro_fitness = 3
-    # Range in denen die preys nahe ihre Eltern spawnen
+    #Range in denen die preys nahe ihre Eltern spawnen
     min_repro_range = 5
     max_repro_range = 15
     #Grösse der Tiere. Je kleiner, desto mehr "Platz" haben sie...

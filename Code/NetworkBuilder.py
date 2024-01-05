@@ -65,8 +65,9 @@ class NetworkBuilder:
             
         return newBiasesN1, newBiasesN2
 
-    #Diese Mutation macht eine random Matrix und addiert diese zur vorherigen Matrix.
-    #Problem: Diese Funktion addiert nur und mit der Zeit werden alle Weights/Biases in Richtung 1 gehen.
+    # Diese Mutation macht eine random Matrix und addiert diese zur vorherigen Matrix.
+    # Problem: Diese Funktion addiert nur und mit der Zeit werden alle Weights/Biases in Richtung 1 gehen.
+    # Diese verwende ich auch nicht in der Simulation, man kann dies aber auch ändern --> Main.py
     def mutateNetwork_1(self, inputNetwork):
         rngweights = [np.random.randn(5, 4), np.random.randn(4, 2)]
         rngbiases = [np.random.randn(4), np.random.randn(2)]
@@ -75,8 +76,9 @@ class NetworkBuilder:
         outputNetwork = Network(newweights, newbiases)
         return outputNetwork
     
-    #Diese Mutation nimmt alle Elemente der Matrix und shuffelt sich ganz wirr durcheinander.
-    #Problem: es shuffelt alle nummern (wie in mutateNetwork_1) und nicht nur einzelne.
+    # Diese Mutation nimmt alle Elemente der Matrix und shuffelt sich ganz wirr durcheinander.
+    # Problem: es shuffelt alle nummern (wie in mutateNetwork_1) und nicht nur einzelne.
+    # Diese verwende ich auch nicht in der Simulation, man kann dies aber auch ändern --> Main.py
     def mutateNetwork_2(self, inputNetwork):
         newweights = [np.random.permutation(inputNetwork.weights[0]) , np.random.permutation(inputNetwork.weights[1])]
         newbiases = [np.random.permutation(inputNetwork.biases[0]) , np.random.permutation(inputNetwork.biases[1])]
@@ -85,12 +87,11 @@ class NetworkBuilder:
     
     
     #Diese Mutation wirkt ähnlich, wie die erste Mutationsfunktion mit einem kleinem unterschied.
-    # 1. Sie kreiert zuerst eine Matrix mit Elementen von -0.1 bis 0.1.
-    # 2. Dann Kreiert sie eine Matrix mit Elementen -1, 0 und 1
-    # 3. Sie Kreiert dann nochmals eine Matrix mit nur 0 und 1 und Multipliziert diese mit der Matrix in Schritt 2.
-    # 4. Die Multipliziert diese Matrix nun mit der ersten matrix, sodass nur wenige Werte mit der schlussendlichen Matrix multipliziert werden.
-    # Der Grund warum ich Schritt 3 gemacht habe ist, dass die wahrscheinlichkeit einer Änderung der Zahl bei 2/3 liegt. Das finde ich zu hoch.
-    # Mit Schritt 3 ist diese Wahrscheinlichkeit der Änderung 1/3 und ich kann diese auch wiederholen.
+    # 1.Sie kreiert eine Matrix mit dem Wert 0 oder 1 mir der globalen Wahrscheinlichkeit, dass 1 Gewählt wird --> einsen Definieren den Ort der Mutation
+    # 2.Sie kreiert eine Neue Matrix mit random Werten von -0.1 bis 0.1 --> Definiert die stärke der Mutation und ob  sie positiv oder negativ ist
+    # 3.Sie multipliziert diese beiden Matrizen und addiert sie schlussendlich zur Inputmatrix
+    # Der Grund warum ich diese Funktion verwende ist, dass hier die Wahrscheinlichkeit einer Mutation eingestellt werden kann im gegensatz zu den anderen
+    # und weil sie ausserdem nur kleine Teile der Matrix ändert, anstatt die Komplette Matrix zu ändern
     def mutateNetwork(self, inputNetwork):
         input_Weights_1 = inputNetwork.weights[0]
         input_Weights_2 = inputNetwork.weights[1]

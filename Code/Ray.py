@@ -46,7 +46,7 @@ class Ray(pygame.sprite.Sprite):
             else:
                 self.distance = 0
     
-    #Update funktion. Definiert die Maske immer wieder je nach Position und Winkel des "Wirt-Tieres" 
+    # Update funktion. Definiert die Maske immer wieder je nach Position und Winkel des "Wirt-Tieres" 
     def update(self, pos, angle, animal_group):
         self.image.fill((255, 0, 0))  # Mit rot ausfüllen, rot ist für rays Transparent
         #Das ist um die vision Rays anzuzeigen.

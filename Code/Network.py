@@ -1,6 +1,6 @@
 import numpy as np
 
-#Klasse mit dem neuronalen Network von jedem Tier. Die Implementation ist selbsterklärend
+# Klasse mit dem neuronalen Network von jedem Tier. Die Implementation ist selbsterklärend
 class Network:
     def __init__(self, weights, biases):
         self.weights = weights
