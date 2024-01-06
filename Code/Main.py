@@ -221,7 +221,7 @@ def runSimulation():
                 if shift_y == 0: shift_y = -1
                 newprey.x += shift_x * range_x
                 newprey.y += shift_y * range_y
-                # Verhindern dass sie aus der Spielfläche gespawnt werden:
+                #Verhindern dass sie aus der Spielfläche gespawnt werden:
                 newprey.x = min(newprey.x, WIDTH)
                 newprey.x = max(newprey.x, 0)
                 newprey.y = min(newprey.y, HEIGHT)
@@ -243,10 +243,13 @@ def runSimulation():
         framecount += 1
         if ((framecount % Globals.graph_rate) == 0):
             framecount = 0
-            #animate(plot_hunter, plot_prey, plot_general, plot_ticks)
+            animate(plot_hunter, plot_prey, plot_general, plot_ticks)
         
         if ((hunter_pop == 0) or (prey_pop == 0)):
             storeData(plot_ticks, plot_hunter, plot_prey)
+            end = time.time()
+            timespan = end - start
+            print(f'This simulation lasted for {round(timespan, 0)} seconds.')
             run = False
 
 
@@ -289,7 +292,7 @@ def runSimulation():
             storeData(plot_ticks, plot_hunter, plot_prey)
             end = time.time()
             timespan = end - start
-            print(f'This simulation lasted for {timespan} seconds.')
+            print(f'This simulation lasted for {round(timespan, 0)} seconds.')
             run = False
             break
         
@@ -306,7 +309,7 @@ def runSimulation():
                 storeData(plot_ticks, plot_hunter, plot_prey)
                 end = time.time()
                 timespan = end - start
-                print(f'This simulation lasted for {timespan} seconds.')
+                print(f'This simulation lasted for {round(timespan, 0)} seconds.')
                 run = False
                 break
 
