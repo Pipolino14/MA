@@ -1,12 +1,13 @@
 import pygame
+
 from utils import *
 
+#Hier initialisiere ich pygame und die Window, welche noch hidden sein soll
 pygame.init()
 pygame.display.init()
 WIDTH, HEIGHT = 1400, 1400
 SCRN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.HIDDEN)
 WIN = pygame.surface.Surface((WIDTH, HEIGHT))
-
 pygame.display.set_caption("Calculation of the fittest")
 
 # Globale Eigenschaften die überall im Programm benutzt werden. 

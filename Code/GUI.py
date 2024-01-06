@@ -1,5 +1,6 @@
 import tkinter as tk
 import customtkinter as cti
+
 from PIL import Image
 from Main import *
 from Globals import *
