@@ -14,10 +14,10 @@ Zip-datei herunterladen und Ordner extrahieren.
 ### Mac
 1. ein Terminal Fenster öffnen.
 2. (Falls noch nicht schon dort): Zum Ordner der Installation navigieren.
-3. den command ins Terminal eingeben: chmod 755 Mac_Start_normal.sh
+3. den command ins Terminal eingeben & ausführen: chmod 755 Mac_Start_normal.sh
 
 #### Probleme(Mac)
-- Das Interface Funktioniert nicht.
+- Das GUI Funktioniert nicht.
 - Fullscreenmodus kann nicht akriviert werden.
 
 ### Module
