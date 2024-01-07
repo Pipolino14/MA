@@ -1,5 +1,6 @@
 # Calculation of the fittest
-Github Repository für meine Maturarbeit.
+Github Repository für meine Maturarbeit. Im Ordner simdata findet man noch in einem Unterfolder ein paar Beispiele für Simulationen. 
+Selbstgenerierte Simulationen werden aber nur im Ordner simdata abgespeichert. 
 Abgabedatum: 8.1.2024
 
 ## Anleitung für Installation
