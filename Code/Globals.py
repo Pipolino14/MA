@@ -17,7 +17,7 @@ class Globals:
     FPS = 30
 
     #Fullscreen Option
-    FULL = True
+    FULL = False
 
     #Range of View
     HUNTER_ROV = 300
