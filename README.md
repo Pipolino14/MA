@@ -4,11 +4,11 @@ Abgabedatum: 8.1.2024
 
 ## Anleitung für Installation
 Zip-datei herunterladen und Ordner extrahieren.
-[Module](###-Module) herunterladen, falls noch nicht vorhanden.
+[Module](#module) herunterladen, falls noch nicht vorhanden.
 
 ### Windows
 - mit Interface:   auf Win_Start_GUI.bat klicken.
-- [ohne](##-Variabeln) Interface:  auf Win_Start_normal.bat klicken.
+- [ohne](#variabeln) Interface:  auf Win_Start_normal.bat klicken.
 
 ### Mac
 1. ein Terminal Fenster öffnen.
